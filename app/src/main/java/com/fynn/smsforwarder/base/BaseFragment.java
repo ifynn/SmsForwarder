@@ -1,6 +1,7 @@
 package com.fynn.smsforwarder.base;
 
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,12 +16,6 @@ import android.view.ViewGroup;
 public abstract class BaseFragment<V, M extends Model, P extends BasePresenter<V, M>> extends Fragment {
 
     protected P mPresenter;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -78,4 +73,9 @@ public abstract class BaseFragment<V, M extends Model, P extends BasePresenter<V
     protected abstract P createPresenter();
 
     protected abstract M createModel();
+
+    @SuppressWarnings("TypeParameterUnusedInFormals")
+    public <T extends View> T findViewById(@IdRes int id) {
+        return getView().findViewById(id);
+    }
 }
