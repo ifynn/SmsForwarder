@@ -5,4 +5,25 @@ package com.fynn.smsforwarder.model.bean;
  */
 
 public class Sms {
+
+    /**
+     * 发件人
+     */
+    public String address;
+
+    /**
+     * 消息内容
+     */
+    public String msg;
+
+    /**
+     * 发件日期
+     */
+    public long date;
+
+    /**
+     * 消息 id
+     */
+    public long id;
+
 }

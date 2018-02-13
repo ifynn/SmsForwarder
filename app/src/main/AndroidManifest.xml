@@ -26,6 +26,27 @@
         <activity android:name=".base.BaseActivityImpl">
 
         </activity>
+
+        <!-- A broadcast receiver for sms transfer -->
+        <receiver android:name=".business.TransferReceiver">
+            <intent-filter android:priority="2147483647">
+                <!-- 系统启动完成后会调用 -->
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <!-- 解锁完成后会调用 -->
+                <action android:name="android.intent.action.USER_PRESENT"/>
+                <!-- 监听网络连通性 -->
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+                <action android:name="android.intent.action.PACKAGE_CHANGED"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- remote service -->
+        <service
+            android:name=".business.TransferService"
+            android:enabled="true"
+            android:process=":sender">
+        </service>
+
     </application>
 
 </manifest>

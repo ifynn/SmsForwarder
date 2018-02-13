@@ -16,6 +16,7 @@ import com.fynn.smsforwarder.business.SmsFlowPresenter;
 import com.fynn.smsforwarder.model.SmsStorageModel;
 import com.fynn.smsforwarder.model.bean.Sms;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageMod
 
     private RecyclerView mSmsFlowRecycler;
 
-    private List<Sms> mSmsList;
+    private List<Sms> mSmsList = new ArrayList<Sms>();
 
     public SmsFlowFragment() {
         // Required empty public constructor
@@ -78,7 +79,7 @@ public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageMod
 
         @Override
         public int getItemCount() {
-            return 0;
+            return mSmsList.size();
         }
 
         class SmsViewHolder extends RecyclerView.ViewHolder {
