@@ -3,6 +3,7 @@ package com.fynn.smsforwarder.business;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.graphics.Bitmap;
@@ -16,8 +17,14 @@ import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.common.SmsManager;
 import com.fynn.smsforwarder.common.ThreadPool;
 import com.fynn.smsforwarder.common.db.Dbs;
-import com.fynn.smsforwarder.model.bean.Sms;
+import com.fynn.smsforwarder.email.EmailTools;
+import com.fynn.smsforwarder.model.bean.InboxSms;
 import com.fynn.smsforwarder.view.MainActivity;
+
+import org.fynn.appu.util.DateHelper;
+import org.fynn.appu.util.ToastUtils;
+
+import java.util.Date;
 
 /**
  * @author Fynn
@@ -31,7 +38,7 @@ public class TransferService extends Service {
 
         @Override
         public void run() {
-            Sms s = Dbs.fetchRecentOneInboxSms();
+            InboxSms s = Dbs.fetchRecentOneInboxSms();
 
             if (s == null) {
                 return;
@@ -116,5 +123,10 @@ public class TransferService extends Service {
 
         ThreadPool.getInstance().shutdown();
         stopForeground(true);
+    }
+
+    public static void start(Context context) {
+        Intent service = new Intent(context, TransferService.class);
+        context.startService(service);
     }
 }

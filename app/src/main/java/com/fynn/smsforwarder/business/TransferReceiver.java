@@ -16,7 +16,6 @@ public class TransferReceiver extends BroadcastReceiver {
         /**
          * 启动后台独立进程，负责短信转发
          */
-        Intent service = new Intent(context, TransferService.class);
-        context.startService(service);
+        TransferService.start(context);
     }
 }

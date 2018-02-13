@@ -105,11 +105,17 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        boolean handled = false;
+
         if (mActivityCapacity != null) {
-            return mActivityCapacity.onActivityKeyDowned(keyCode, event);
+            handled = mActivityCapacity.onActivityKeyDowned(keyCode, event);
         }
 
-        return super.onKeyDown(keyCode, event);
+        if (!handled) {
+            handled = super.onKeyDown(keyCode, event);
+        }
+
+        return handled;
     }
 
     @Override

@@ -11,7 +11,7 @@ import com.fynn.smsforwarder.R;
 import org.fynn.appu.AppU;
 
 /**
- * @author lifs
+ * @author Fynn
  * @date 18/2/13
  */
 public class SmsDbHelper extends SQLiteOpenHelper {
@@ -111,6 +111,7 @@ public class SmsDbHelper extends SQLiteOpenHelper {
         } finally {
             db.endTransaction();
         }
+        c.close();
         return c;
     }
 
@@ -140,6 +141,7 @@ public class SmsDbHelper extends SQLiteOpenHelper {
             db.close();
         }
 
+        cursor.close();
         return cursor;
     }
 
@@ -169,6 +171,8 @@ public class SmsDbHelper extends SQLiteOpenHelper {
         } finally {
             db.endTransaction();
         }
+
+        c.close();
         return c;
     }
 
@@ -202,6 +206,7 @@ public class SmsDbHelper extends SQLiteOpenHelper {
 
         c.moveToFirst();
         long count = c.getLong(0);
+        c.close();
 
         return count;
     }

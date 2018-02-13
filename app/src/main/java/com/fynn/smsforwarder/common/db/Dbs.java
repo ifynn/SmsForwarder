@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import com.fynn.smsforwarder.common.SmsManager;
+import com.fynn.smsforwarder.model.bean.InboxSms;
 import com.fynn.smsforwarder.model.bean.Sms;
 
 import org.fynn.appu.AppU;
@@ -23,7 +24,7 @@ public final class Dbs {
      *
      * @return
      */
-    public static final synchronized Sms fetchRecentOneInboxSms() {
+    public static synchronized InboxSms fetchRecentOneInboxSms() {
         ContentResolver resolver = AppU.app().getContentResolver();
         Cursor cursor = resolver.query(Uri.parse(SmsManager.CONTENT_SMS_INBOX),
                 null, null, null, "_id desc");
@@ -40,12 +41,16 @@ public final class Dbs {
         String body = cursor.getString(cursor.getColumnIndex("body"));
         long date = cursor.getLong(cursor.getColumnIndex("date"));
         int id = cursor.getInt(cursor.getColumnIndex("_id"));
+        int read = cursor.getInt(cursor.getColumnIndex("read"));
+        int type = cursor.getInt(cursor.getColumnIndex("type"));
 
-        Sms sms = new Sms();
+        InboxSms sms = new InboxSms();
         sms.address = address;
         sms.date = date;
         sms.id = id;
         sms.msg = body;
+        sms.read = read == 1 ? true  : false;
+        sms.type = type;
 
         cursor.close();
         return sms;
