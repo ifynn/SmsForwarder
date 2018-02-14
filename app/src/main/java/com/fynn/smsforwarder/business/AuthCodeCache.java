@@ -10,10 +10,10 @@ import org.fynn.appu.common.Immutable;
  * @author Fynn
  * @date 18/2/14
  */
-public class AuthCodeCache extends Immutable {
+public class AuthCodeCache {
 
     public static final int CACHE_SIZE = 100;
-    private static Object LOCKED = new Object();
+    private static Object LOCK = new Object();
 
     private static AuthCodeCache authCodeCache;
 
@@ -26,9 +26,9 @@ public class AuthCodeCache extends Immutable {
     }
 
     public static AuthCodeCache get() {
-        synchronized (LOCKED) {
+        synchronized (LOCK) {
             if (authCodeCache == null) {
-                synchronized (LOCKED) {
+                synchronized (LOCK) {
                     authCodeCache = new AuthCodeCache();
                 }
             }

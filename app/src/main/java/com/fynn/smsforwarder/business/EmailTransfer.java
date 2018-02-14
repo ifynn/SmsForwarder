@@ -122,6 +122,8 @@ public class EmailTransfer {
         data.subject = subject;
         data.content = content;
         data.nickname = nickname;
+        data.fromAddress = username;
+        data.validate = true;
 
         if (EmailTransfer.check(data)) {
             return data;

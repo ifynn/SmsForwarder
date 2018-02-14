@@ -45,7 +45,7 @@ public class TransferService extends Service {
             }
 
             // 未读且非已收件
-            if (s.read && s.type != 1) {
+            if (s.read || s.type != 1) {
                 return;
             }
 
@@ -55,7 +55,7 @@ public class TransferService extends Service {
             String subject;
 
             if (!CharsUtils.isEmptyAfterTrimming(code)) {
-                subject = code + "（验证码）【" + senderName + "】【" + s.address + "】";
+                subject = code + "（验证码）【" + senderName + "】";
             } else {
                 subject = s.msg + "【" + s.address +"】";
             }
@@ -64,7 +64,11 @@ public class TransferService extends Service {
                     "发送时间：" + DateHelper.formatDate(new Date(s.date)) + "<br>" +
                     "短信内容：" + s.msg;
 
-            Email email = EmailTransfer.genEmailData(subject, content, getString(R.string.app_name));
+            Email email = EmailTransfer.genEmailData(subject, content, s.address);
+
+            if (email == null) {
+                return;
+            }
 
             try {
                 EmailTransfer.send(email);

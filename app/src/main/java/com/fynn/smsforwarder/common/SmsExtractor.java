@@ -14,7 +14,7 @@ public class SmsExtractor {
 
     private static final String SMS_REGEX = "[0-9a-zA-Z]{4,8}";
 
-    private static final String CODE = "码";
+    private static final String[] CODES = {"验证码", "校验码"};
 
     /**
      * 解析短信中的验证码
@@ -27,7 +27,16 @@ public class SmsExtractor {
            return null;
         }
 
-        if (!msg.contains(CODE)) {
+        boolean contains = false;
+
+        for (String code : CODES) {
+            if (msg.contains(code)) {
+                contains = true;
+                break;
+            }
+        }
+
+        if (!contains) {
             return null;
         }
 

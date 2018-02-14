@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f5f5f5"
+    android:background="#f8f8f8"
     android:orientation="vertical">
 
     <TextView
@@ -21,10 +21,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        android:paddingBottom="12dp"
+        android:paddingBottom="15dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingTop="12dp"
+        android:paddingTop="15dp"
         android:text="SMTP 服务器地址"
         android:textColor="#333333"
         android:textSize="14sp" />
@@ -32,17 +32,17 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="#d3d3d3" />
+        android:background="#eeeeee" />
 
     <TextView
         android:id="@+id/tv_smpt_port"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        android:paddingBottom="12dp"
+        android:paddingBottom="15dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingTop="12dp"
+        android:paddingTop="15dp"
         android:text="SMTP 服务器端口号"
         android:textColor="#333333"
         android:textSize="14sp" />
@@ -50,17 +50,17 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="#d3d3d3" />
+        android:background="#eeeeee" />
 
     <TextView
         android:id="@+id/tv_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        android:paddingBottom="12dp"
+        android:paddingBottom="15dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingTop="12dp"
+        android:paddingTop="15dp"
         android:text="用户名"
         android:textColor="#333333"
         android:textSize="14sp" />
@@ -68,17 +68,17 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="#d3d3d3" />
+        android:background="#eeeeee" />
 
     <TextView
         android:id="@+id/tv_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        android:paddingBottom="12dp"
+        android:paddingBottom="15dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingTop="12dp"
+        android:paddingTop="15dp"
         android:text="密码"
         android:textColor="#333333"
         android:textSize="14sp" />
@@ -86,12 +86,12 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:background="#d3d3d3" />
+        android:background="#eeeeee" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="10dp"
         android:background="@android:color/white"
         android:gravity="center_vertical"
         android:orientation="horizontal">
@@ -100,10 +100,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:paddingBottom="12dp"
+            android:paddingBottom="15dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:paddingTop="12dp"
+            android:paddingTop="15dp"
             android:text="开启 SSL"
             android:textColor="#333333"
             android:textSize="14sp" />
@@ -134,10 +134,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        android:paddingBottom="12dp"
+        android:paddingBottom="15dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingTop="12dp"
+        android:paddingTop="15dp"
         android:text="收件箱地址"
         android:textColor="#333333"
         android:textSize="14sp" />

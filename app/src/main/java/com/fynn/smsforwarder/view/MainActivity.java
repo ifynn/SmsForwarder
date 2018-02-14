@@ -13,6 +13,7 @@ import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.base.ActivityCapacity;
 import com.fynn.smsforwarder.base.BaseActivity;
 import com.fynn.smsforwarder.base.BaseActivityImpl;
+import com.fynn.smsforwarder.business.TransferService;
 
 public class MainActivity extends BaseActivity {
 
@@ -24,5 +25,6 @@ public class MainActivity extends BaseActivity {
         }
 
         super.onCreate(savedInstanceState);
+        TransferService.start(this);
     }
 }

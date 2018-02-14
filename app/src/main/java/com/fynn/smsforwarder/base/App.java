@@ -18,6 +18,5 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         AppU.init(this);
-        TransferService.start(this);
     }
 }
