@@ -15,7 +15,6 @@ import com.fynn.smsforwarder.base.BasePresenter;
 import com.fynn.smsforwarder.base.Model;
 
 /**
- *
  * @author fynn
  * @date 2018/2/4
  */
@@ -34,17 +33,23 @@ public class MainCapacity extends BaseActivityCapacity {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     mActivity.getSupportActionBar().setTitle(R.string.title_home);
-                    return true;
+                    mViewPager.setCurrentItem(0);
+                    break;
 
                 case R.id.navigation_dashboard:
                     mActivity.getSupportActionBar().setTitle(R.string.title_dashboard);
-                    return true;
+                    mViewPager.setCurrentItem(1);
+                    break;
 
                 case R.id.navigation_notifications:
                     mActivity.getSupportActionBar().setTitle(R.string.title_notifications);
-                    return true;
+                    mViewPager.setCurrentItem(2);
+                    break;
+
+                default:
+                    return false;
             }
-            return false;
+            return true;
         }
     };
 

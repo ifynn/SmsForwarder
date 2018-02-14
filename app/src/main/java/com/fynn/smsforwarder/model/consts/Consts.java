@@ -11,4 +11,13 @@ public final class Consts {
      */
     public static final String PUB_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL8Zpd/ApPhT6J4ilm1lHtwEGfrC5W2HAR6tg8qcbMLSwQKJncMoXffXjvll0JJov3eBJmy4UNDoEUnzc/FPDnsCAwEAAQ==";
 
+    public static class EmailConst {
+        public static final String SERVER_HOST = "mail.host";
+        public static final String SERVER_PORT = "mail.port";
+        public static final String PASSWORD = "mail.psw";
+        public static final String USERNAME = "mail.username";
+        public static final String SSL = "mail.ssl";
+        public static final String EMAIL = "mail.email";
+    }
+
 }

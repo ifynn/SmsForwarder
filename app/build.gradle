@@ -43,4 +43,6 @@ dependencies {
     compile 'com.sun.mail:android-mail:1.6.0'
     compile 'com.sun.mail:android-activation:1.6.0'
     compile 'org.fynn.appu:appu:1.0.2'
+    compile 'com.qmuiteam:qmui:1.0.6'
+    compile 'com.fynn.switcher:switch:1.0.2'
 }

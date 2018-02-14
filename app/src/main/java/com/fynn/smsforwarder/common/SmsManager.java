@@ -34,4 +34,32 @@ public final class SmsManager {
         ContentResolver resolver = AppU.app().getContentResolver();
         resolver.unregisterContentObserver(observer);
     }
+
+    /**
+     * 获取短信发送者
+     *
+     * @return
+     */
+    public static final String fetchSmsSender(String msg) {
+        if (msg == null) {
+            return "";
+        }
+
+        int start = msg.indexOf('【');
+        int end = msg.lastIndexOf('】');
+
+        if (start < 0 || end < 0) {
+            return "";
+        }
+
+        if (end - start < 1) {
+            return "";
+        }
+
+        if (start > msg.length() - 1 || end > msg.length() - 1) {
+            return "";
+        }
+
+        return msg.substring(start + 1, end);
+    }
 }

@@ -17,12 +17,12 @@ import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.common.SmsManager;
 import com.fynn.smsforwarder.common.ThreadPool;
 import com.fynn.smsforwarder.common.db.Dbs;
-import com.fynn.smsforwarder.email.EmailTools;
+import com.fynn.smsforwarder.model.bean.Email;
 import com.fynn.smsforwarder.model.bean.InboxSms;
 import com.fynn.smsforwarder.view.MainActivity;
 
+import org.fynn.appu.util.CharsUtils;
 import org.fynn.appu.util.DateHelper;
-import org.fynn.appu.util.ToastUtils;
 
 import java.util.Date;
 
@@ -44,7 +44,33 @@ public class TransferService extends Service {
                 return;
             }
 
+            // 未读且非已收件
+            if (s.read && s.type != 1) {
+                return;
+            }
 
+            String code = AuthCodeCache.get().fetchCode(s);
+            String senderName = SmsManager.fetchSmsSender(s.msg);
+
+            String subject;
+
+            if (!CharsUtils.isEmptyAfterTrimming(code)) {
+                subject = code + "（验证码）【" + senderName + "】【" + s.address + "】";
+            } else {
+                subject = s.msg + "【" + s.address +"】";
+            }
+
+            String content = "发件人：" + s.address + "<br>" +
+                    "发送时间：" + DateHelper.formatDate(new Date(s.date)) + "<br>" +
+                    "短信内容：" + s.msg;
+
+            Email email = EmailTransfer.genEmailData(subject, content, getString(R.string.app_name));
+
+            try {
+                EmailTransfer.send(email);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     };
 

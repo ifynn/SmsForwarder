@@ -17,16 +17,7 @@ public abstract class BaseFragment<V, M extends Model, P extends BasePresenter<V
 
     protected P mPresenter;
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        createPresenterInternal();
-        createModelInternal();
-
-        initViews(savedInstanceState);
-        initActions(savedInstanceState);
-    }
+    private View rootView;
 
     @Nullable
     @Override
@@ -37,8 +28,15 @@ public abstract class BaseFragment<V, M extends Model, P extends BasePresenter<V
             return super.onCreateView(inflater, container, savedInstanceState);
         }
 
-        View content = inflater.inflate(id, container, false);
-        return content;
+        rootView = inflater.inflate(id, container, false);
+
+        createPresenterInternal();
+        createModelInternal();
+
+        initViews(savedInstanceState);
+        initActions(savedInstanceState);
+
+        return rootView;
     }
 
     @LayoutRes
@@ -76,6 +74,6 @@ public abstract class BaseFragment<V, M extends Model, P extends BasePresenter<V
 
     @SuppressWarnings("TypeParameterUnusedInFormals")
     public <T extends View> T findViewById(@IdRes int id) {
-        return getView().findViewById(id);
+        return rootView.findViewById(id);
     }
 }
