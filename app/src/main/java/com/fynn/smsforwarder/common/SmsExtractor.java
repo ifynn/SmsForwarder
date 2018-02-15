@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  */
 public class SmsExtractor {
 
-    private static final String SMS_REGEX = "[0-9a-zA-Z]{4,8}";
+    private static final String SMS_REGEX = "[0-9a-zA-Z]{6}";
 
     private static final String[] CODES = {"验证码", "校验码"};
 
@@ -41,6 +41,8 @@ public class SmsExtractor {
         }
 
         Matcher m = Patterns.p.matcher(msg);
+        int count = 0;
+        String code = null;
 
         while (m.find()) {
             String s = m.group();
@@ -49,18 +51,16 @@ public class SmsExtractor {
                 continue;
             }
 
-            if (TextUtils.isDigitsOnly(s) && s.length() == 6) {
-                return s;
-            }
+            count++;
 
-            if (s.length() == 6) {
-                return s;
+            if (count > 1) {
+                return null;
+            } else {
+                code = s;
             }
-
-            return s;
         }
 
-        return null;
+        return code;
     }
 
     static class Patterns {

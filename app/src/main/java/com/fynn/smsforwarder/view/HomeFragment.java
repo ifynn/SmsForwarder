@@ -62,6 +62,9 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        LogU.e("setUserVisibleHint", isVisibleToUser);
+
+        if (tvCount != null) {
+            tvCount.setText(SmsDbHelper.get().getCount() + "");
+        }
     }
 }
