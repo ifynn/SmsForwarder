@@ -17,6 +17,7 @@ import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.common.SmsManager;
 import com.fynn.smsforwarder.common.ThreadPool;
 import com.fynn.smsforwarder.common.db.Dbs;
+import com.fynn.smsforwarder.common.db.SmsDbHelper;
 import com.fynn.smsforwarder.model.bean.Email;
 import com.fynn.smsforwarder.model.bean.InboxSms;
 import com.fynn.smsforwarder.view.MainActivity;
@@ -72,6 +73,7 @@ public class TransferService extends Service {
 
             try {
                 EmailTransfer.send(email);
+                Dbs.insert(s);
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -1,5 +1,6 @@
 package com.fynn.smsforwarder.view;
 
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -8,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.base.BaseActivityCapacity;
@@ -25,6 +27,7 @@ public class MainCapacity extends BaseActivityCapacity {
 
     private ViewPager mViewPager;
     private BottomNavigationView navigation;
+    private TextView tvTitle;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -33,18 +36,18 @@ public class MainCapacity extends BaseActivityCapacity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    mActivity.getSupportActionBar().setTitle(R.string.title_home);
                     mViewPager.setCurrentItem(0);
+                    tvTitle.setText(R.string.title_home);
                     break;
 
                 case R.id.navigation_dashboard:
-                    mActivity.getSupportActionBar().setTitle(R.string.title_dashboard);
                     mViewPager.setCurrentItem(1);
+                    tvTitle.setText(R.string.title_dashboard);
                     break;
 
                 case R.id.navigation_notifications:
-                    mActivity.getSupportActionBar().setTitle(R.string.title_notifications);
                     mViewPager.setCurrentItem(2);
+                    tvTitle.setText(R.string.title_notifications);
                     break;
 
                 default:
@@ -52,7 +55,6 @@ public class MainCapacity extends BaseActivityCapacity {
             }
             return true;
         }
-
     };
 
     @Override
@@ -69,9 +71,24 @@ public class MainCapacity extends BaseActivityCapacity {
         };
 
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        tvTitle = (TextView) findViewById(R.id.tv_title);
 
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        int[][] states = new int[][]{
+                new int[]{-android.R.attr.state_checked},
+                new int[]{android.R.attr.state_checked}
+        };
+
+        int[] colors = new int[]{mActivity.getResources().getColor(R.color.qmui_config_color_gray_6),
+                mActivity.getResources().getColor(R.color.colorPrimary)
+        };
+        ColorStateList csl = new ColorStateList(states, colors);
+        navigation.setItemTextColor(csl);
+        navigation.setItemIconTintList(csl);
+
+        navigation.setSelectedItemId(R.id.navigation_home);
     }
 
     @Override

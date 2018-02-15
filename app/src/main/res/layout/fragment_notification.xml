@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="#f8f8f8"
-              android:orientation="vertical">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f8f8f8"
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="wrap_content"
@@ -12,9 +13,10 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingTop="3dp"
-        android:text="发件服务器设置"
+        android:text="发件服务器"
         android:textColor="#666666"
-        android:textSize="12sp"/>
+        android:textSize="12sp"
+        android:layout_marginTop="10dp"/>
 
     <TextView
         android:id="@+id/tv_smpt_address"
@@ -25,7 +27,7 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingTop="15dp"
-        android:text="SMTP 服务器地址"
+        android:text="SMTP 服务器"
         android:textColor="#333333"
         android:textSize="14sp"/>
 
@@ -43,7 +45,7 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingTop="15dp"
-        android:text="SMTP 服务器端口号"
+        android:text="端口"
         android:textColor="#333333"
         android:textSize="14sp"/>
 
@@ -125,7 +127,7 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingTop="3dp"
-        android:text="收件箱设置"
+        android:text="收件箱"
         android:textColor="#666666"
         android:textSize="12sp"/>
 
