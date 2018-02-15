@@ -63,6 +63,29 @@ public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageMod
         return new SmsStorageModel();
     }
 
+    static class ItemDivider extends RecyclerView.ItemDecoration {
+
+        @ColorInt
+        int color;
+
+        public static ItemDivider newInstance(@ColorInt int color) {
+            ItemDivider divider = new ItemDivider();
+            divider.color = color;
+            return divider;
+        }
+
+        @Override
+        public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+            super.onDraw(c, parent, state);
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
+                                   RecyclerView.State state) {
+            super.getItemOffsets(outRect, view, parent, state);
+        }
+    }
+
     class SmsFlowAdapter extends RecyclerView.Adapter<SmsFlowAdapter.SmsViewHolder> {
 
         @Override
@@ -87,29 +110,6 @@ public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageMod
             public SmsViewHolder(View itemView) {
                 super(itemView);
             }
-        }
-    }
-
-    static class ItemDivider extends RecyclerView.ItemDecoration {
-
-        @ColorInt
-        int color;
-
-        public static ItemDivider newInstance(@ColorInt int color) {
-            ItemDivider divider = new ItemDivider();
-            divider.color = color;
-            return divider;
-        }
-
-        @Override
-        public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-            super.onDraw(c, parent, state);
-        }
-
-        @Override
-        public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
-                                   RecyclerView.State state) {
-            super.getItemOffsets(outRect, view, parent, state);
         }
     }
 }

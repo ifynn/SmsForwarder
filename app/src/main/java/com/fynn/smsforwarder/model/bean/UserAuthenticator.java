@@ -9,17 +9,18 @@ import javax.mail.PasswordAuthentication;
 public class UserAuthenticator extends Authenticator {
 
     private String username;
-	private String password;
+    private String password;
 
-	public UserAuthenticator() {}   
+    public UserAuthenticator() {
+    }
 
-	public UserAuthenticator(String username, String password) {
-		this.username = username;
-		this.password = password;    
-	}
+    public UserAuthenticator(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 
-	@Override
-	protected PasswordAuthentication getPasswordAuthentication() {
-		return new PasswordAuthentication(username, password);
-	}
+    @Override
+    protected PasswordAuthentication getPasswordAuthentication() {
+        return new PasswordAuthentication(username, password);
+    }
 }

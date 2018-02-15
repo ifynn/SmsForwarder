@@ -33,7 +33,65 @@ public class ThreadFactoryBuilder {
     /**
      * 创建一个新的 {@link ThreadFactory} 构造器.
      */
-    public ThreadFactoryBuilder() {}
+    public ThreadFactoryBuilder() {
+    }
+
+    /**
+     * check if object is null
+     *
+     * @param object
+     * @param <T>
+     * @return
+     */
+    static <T> T checkNotNull(T object) {
+        if (object == null) {
+            throw new NullPointerException();
+        }
+        return object;
+    }
+
+    /**
+     * 构造 ThreadFactory
+     *
+     * @param builder
+     * @return
+     */
+    private static ThreadFactory build(ThreadFactoryBuilder builder) {
+        final String nameFormat = builder.nameFormat;
+        final Boolean daemon = builder.daemon;
+        final Integer priority = builder.priority;
+        final Thread.UncaughtExceptionHandler uncaughtExceptionHandler =
+                builder.uncaughtExceptionHandler;
+
+        final ThreadFactory factory = Executors.defaultThreadFactory();
+        final AtomicLong count = nameFormat != null ? new AtomicLong(0) : null;
+
+        return new ThreadFactory() {
+
+            @Override
+            public Thread newThread(Runnable runnable) {
+                Thread thread = factory.newThread(runnable);
+
+                if (nameFormat != null) {
+                    thread.setName(String.format(nameFormat, count.getAndIncrement()));
+                }
+
+                if (daemon != null) {
+                    thread.setDaemon(daemon);
+                }
+
+                if (priority != null) {
+                    thread.setPriority(priority);
+                }
+
+                if (uncaughtExceptionHandler != null) {
+                    thread.setUncaughtExceptionHandler(uncaughtExceptionHandler);
+                }
+
+                return thread;
+            }
+        };
+    }
 
     /**
      * 设置命名格式，用于 ({@link Thread#setName})
@@ -96,68 +154,11 @@ public class ThreadFactoryBuilder {
     }
 
     /**
-     * check if object is null
-     *
-     * @param object
-     * @param <T>
-     * @return
-     */
-    static <T> T checkNotNull(T object) {
-        if (object == null) {
-            throw new NullPointerException();
-        }
-        return object;
-    }
-
-    /**
      * build a ThreadFactory
      *
      * @return
      */
     public ThreadFactory build() {
         return build(this);
-    }
-
-    /**
-     * 构造 ThreadFactory
-     *
-     * @param builder
-     * @return
-     */
-    private static ThreadFactory build(ThreadFactoryBuilder builder) {
-        final String nameFormat = builder.nameFormat;
-        final Boolean daemon = builder.daemon;
-        final Integer priority = builder.priority;
-        final Thread.UncaughtExceptionHandler uncaughtExceptionHandler =
-                builder.uncaughtExceptionHandler;
-
-        final ThreadFactory factory = Executors.defaultThreadFactory();
-        final AtomicLong count = nameFormat != null ? new AtomicLong(0) : null;
-
-        return new ThreadFactory() {
-
-            @Override
-            public Thread newThread(Runnable runnable) {
-                Thread thread = factory.newThread(runnable);
-
-                if (nameFormat != null) {
-                    thread.setName(String.format(nameFormat, count.getAndIncrement()));
-                }
-
-                if (daemon != null) {
-                    thread.setDaemon(daemon);
-                }
-
-                if (priority != null) {
-                    thread.setPriority(priority);
-                }
-
-                if (uncaughtExceptionHandler != null) {
-                    thread.setUncaughtExceptionHandler(uncaughtExceptionHandler);
-                }
-
-                return thread;
-            }
-        };
     }
 }

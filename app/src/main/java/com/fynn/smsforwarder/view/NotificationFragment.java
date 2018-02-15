@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.base.BaseFragment;
@@ -12,11 +11,13 @@ import com.fynn.smsforwarder.base.BasePresenter;
 import com.fynn.smsforwarder.base.Model;
 import com.fynn.smsforwarder.common.db.SPs;
 import com.fynn.smsforwarder.model.consts.Consts;
+import com.fynn.smsforwarder.security.RPHelper;
 import com.fynn.switcher.Switch;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 
 import org.fynn.appu.util.CharsUtils;
+import org.fynn.appu.util.RSAHelper;
 import org.fynn.appu.util.ToastUtils;
 
 /**
@@ -32,6 +33,7 @@ public class NotificationFragment extends BaseFragment implements View.OnClickLi
     private TextView tvToAddress;
 
     private DataHandler handler;
+    private boolean hided;
 
     public NotificationFragment() {
         // Required empty public constructor
@@ -75,6 +77,27 @@ public class NotificationFragment extends BaseFragment implements View.OnClickLi
                 handler.save(R.id.switch_ssl_enabled, String.valueOf(isChecked));
             }
         });
+
+        tvPassword.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (CharsUtils.isEmptyAfterTrimming(handler.getPassword())) {
+                    return false;
+                }
+
+                if (hided) {
+                    //显示密码
+                    tvPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                    hided = false;
+                } else {
+                    //隐藏密码
+                    tvPassword.setInputType(InputType.TYPE_CLASS_TEXT |
+                            InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                    hided = true;
+                }
+                return true;
+            }
+        });
     }
 
     private void refresh() {
@@ -92,6 +115,11 @@ public class NotificationFragment extends BaseFragment implements View.OnClickLi
 
         if (!CharsUtils.isEmptyAfterTrimming(handler.getPassword())) {
             tvPassword.setText(handler.getPassword());
+            tvPassword.setInputType(InputType.TYPE_CLASS_TEXT |
+                    InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            hided = true;
+        } else {
+            tvPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         }
 
         if (!CharsUtils.isEmptyAfterTrimming(handler.getToAddress())) {
@@ -125,65 +153,6 @@ public class NotificationFragment extends BaseFragment implements View.OnClickLi
             default:
                 break;
         }
-    }
-
-    class DataHandler implements Model {
-
-        public String getSMTPAddress() {
-            return SPs.getSharedPreferences().getString(Consts.EmailConst.SERVER_HOST, "");
-        }
-
-        public String getSMTPPort() {
-            return SPs.getSharedPreferences().getString(Consts.EmailConst.SERVER_PORT, "");
-        }
-
-        public String getToAddress() {
-            return SPs.getSharedPreferences().getString(Consts.EmailConst.EMAIL, "");
-        }
-
-        public String getPassword() {
-            return SPs.getSharedPreferences().getString(Consts.EmailConst.PASSWORD, "");
-        }
-
-        public String getUsername() {
-            return SPs.getSharedPreferences().getString(Consts.EmailConst.USERNAME, "");
-        }
-
-        public boolean sslEnabled() {
-            return SPs.getSharedPreferences().getBoolean(Consts.EmailConst.SSL, true);
-        }
-
-        public void save(int id, String text) {
-            switch (id) {
-                case R.id.tv_smpt_address:
-                    SPs.getEditor().putString(Consts.EmailConst.SERVER_HOST, text).apply();
-                    break;
-
-                case R.id.tv_smpt_port:
-                    SPs.getEditor().putString(Consts.EmailConst.SERVER_PORT, text).apply();
-                    break;
-
-                case R.id.tv_username:
-                    SPs.getEditor().putString(Consts.EmailConst.USERNAME, text).apply();
-                    break;
-
-                case R.id.tv_password:
-                    SPs.getEditor().putString(Consts.EmailConst.PASSWORD, text).apply();
-                    break;
-
-                case R.id.tv_to_address:
-                    SPs.getEditor().putString(Consts.EmailConst.EMAIL, text).apply();
-                    break;
-
-                case R.id.switch_ssl_enabled:
-                    SPs.getEditor().putBoolean(Consts.EmailConst.SSL, Boolean.valueOf(text)).apply();
-                    break;
-
-                default:
-                    break;
-            }
-        }
-
     }
 
     private void showEditTextDialog(final int id) {
@@ -246,5 +215,67 @@ public class NotificationFragment extends BaseFragment implements View.OnClickLi
                     }
                 })
                 .show();
+    }
+
+    class DataHandler implements Model {
+
+        public String getSMTPAddress() {
+            return SPs.getSharedPreferences().getString(Consts.EmailConst.SERVER_HOST, "");
+        }
+
+        public String getSMTPPort() {
+            return SPs.getSharedPreferences().getString(Consts.EmailConst.SERVER_PORT, "");
+        }
+
+        public String getToAddress() {
+            return SPs.getSharedPreferences().getString(Consts.EmailConst.EMAIL, "");
+        }
+
+        public String getPassword() {
+            return RSAHelper.decipher(Consts.PUB_KEY,
+                    SPs.getSharedPreferences().getString(Consts.EmailConst.PASSWORD, ""));
+        }
+
+        public String getUsername() {
+            return SPs.getSharedPreferences().getString(Consts.EmailConst.USERNAME, "");
+        }
+
+        public boolean sslEnabled() {
+            return SPs.getSharedPreferences().getBoolean(Consts.EmailConst.SSL, true);
+        }
+
+        public void save(int id, String text) {
+            switch (id) {
+                case R.id.tv_smpt_address:
+                    SPs.getEditor().putString(Consts.EmailConst.SERVER_HOST, text).apply();
+                    break;
+
+                case R.id.tv_smpt_port:
+                    SPs.getEditor().putString(Consts.EmailConst.SERVER_PORT, text).apply();
+                    break;
+
+                case R.id.tv_username:
+                    SPs.getEditor().putString(Consts.EmailConst.USERNAME, text).apply();
+                    break;
+
+                case R.id.tv_password:
+                    SPs.getEditor().putString(
+                            Consts.EmailConst.PASSWORD,
+                            RSAHelper.cipher(RPHelper.getPRK(), text)).apply();
+                    break;
+
+                case R.id.tv_to_address:
+                    SPs.getEditor().putString(Consts.EmailConst.EMAIL, text).apply();
+                    break;
+
+                case R.id.switch_ssl_enabled:
+                    SPs.getEditor().putBoolean(Consts.EmailConst.SSL, Boolean.valueOf(text)).apply();
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
     }
 }

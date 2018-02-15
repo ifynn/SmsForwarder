@@ -22,16 +22,12 @@ public class SmsDbHelper extends SQLiteOpenHelper {
     public static final String BODY = "body";
     public static final String DATE = "date";
     public static final String ID = "_id";
-
-    private static int VERSION = AppU.app().getResources().getInteger(R.integer.db_sms_version);
-
     private static final String SQL_CREATE_TABLE = "create table " + TABLE_NAME +
             "(" + ID + " number primary key," + ADDRESS + " text," +
             BODY + " text," + DATE + " text)";
-
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
-
+    private static int VERSION = AppU.app().getResources().getInteger(R.integer.db_sms_version);
     private static volatile SmsDbHelper smsDbHelper;
 
     private SmsDbHelper(Context context) {
@@ -124,7 +120,7 @@ public class SmsDbHelper extends SQLiteOpenHelper {
     public Cursor query(long id) {
         SQLiteDatabase db = getReadableDatabase();
 
-        if(!db.isOpen()){
+        if (!db.isOpen()) {
             return null;
         }
 

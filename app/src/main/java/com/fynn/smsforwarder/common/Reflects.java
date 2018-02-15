@@ -24,13 +24,12 @@ public class Reflects {
     }
 
     /**
-     * @see #invokeStaticMethod
-     *
      * @param clsName
      * @param methodName
      * @param argsTypes
      * @param args
      * @return
+     * @see #invokeStaticMethod
      */
     public static <T> T invokeStaticMethod(
             String clsName, String methodName, Class<?>[] argsTypes, Object[] args) {
@@ -50,7 +49,7 @@ public class Reflects {
             Class<?> cls, String methodName, Class<?>[] argsTypes, Object[] args) {
         try {
             Method method = getMethod(cls, methodName, argsTypes);
-            if(method != null) {
+            if (method != null) {
                 return (T) method.invoke(null, args);
             }
         } catch (Exception e) {
@@ -72,7 +71,7 @@ public class Reflects {
         try {
             Method method = cls.getDeclaredMethod(methodName, types);
 
-            if(!Modifier.isPublic(method.getModifiers())) {
+            if (!Modifier.isPublic(method.getModifiers())) {
                 method.setAccessible(true);
             }
             return method;

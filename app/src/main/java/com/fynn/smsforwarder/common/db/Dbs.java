@@ -49,7 +49,7 @@ public final class Dbs {
         sms.date = date;
         sms.id = id;
         sms.msg = body;
-        sms.read = read == 1 ? true  : false;
+        sms.read = read == 1 ? true : false;
         sms.type = type;
 
         cursor.close();

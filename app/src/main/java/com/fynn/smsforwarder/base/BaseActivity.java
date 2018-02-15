@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 
 /**
@@ -33,7 +32,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
 
         try {
-            mActivityCapacity = (ActivityCapacity)Class.forName(capacityClass).newInstance();
+            mActivityCapacity = (ActivityCapacity) Class.forName(capacityClass).newInstance();
             mActivityCapacity.onActivityCreated(this, savedInstanceState);
         } catch (Exception e) {
             e.printStackTrace();

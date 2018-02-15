@@ -55,9 +55,9 @@ public class TransferService extends Service {
             String subject;
 
             if (!CharsUtils.isEmptyAfterTrimming(code)) {
-                subject = code + "（验证码）【" + senderName + "】";
+                subject = code + " (验证码)【" + senderName + "】";
             } else {
-                subject = s.msg + "【" + s.address +"】";
+                subject = s.msg + "【" + s.address + "】";
             }
 
             String content = "发件人：" + s.address + "<br>" +
@@ -78,6 +78,11 @@ public class TransferService extends Service {
         }
     };
 
+    public static void start(Context context) {
+        Intent service = new Intent(context, TransferService.class);
+        context.startService(service);
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -85,27 +90,6 @@ public class TransferService extends Service {
 
         observer = new SmsContentObserver();
         SmsManager.registerContentObserver(observer);
-    }
-
-    class SmsContentObserver extends ContentObserver {
-
-        /**
-         * Creates a content observer.
-         *
-         * @param handler The handler to run {@link #onChange} on, or null if none.
-         */
-        public SmsContentObserver(Handler handler) {
-            super(handler);
-        }
-
-        public SmsContentObserver() {
-            this(null);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            ThreadPool.getInstance().execute(transferRunnable);
-        }
     }
 
     @Nullable
@@ -155,8 +139,24 @@ public class TransferService extends Service {
         stopForeground(true);
     }
 
-    public static void start(Context context) {
-        Intent service = new Intent(context, TransferService.class);
-        context.startService(service);
+    class SmsContentObserver extends ContentObserver {
+
+        /**
+         * Creates a content observer.
+         *
+         * @param handler The handler to run {@link #onChange} on, or null if none.
+         */
+        public SmsContentObserver(Handler handler) {
+            super(handler);
+        }
+
+        public SmsContentObserver() {
+            this(null);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            ThreadPool.getInstance().execute(transferRunnable);
+        }
     }
 }

@@ -4,7 +4,6 @@ import com.fynn.smsforwarder.common.SmsExtractor;
 import com.fynn.smsforwarder.model.bean.Sms;
 
 import org.fynn.appu.cache.LruCache;
-import org.fynn.appu.common.Immutable;
 
 /**
  * @author Fynn
@@ -13,13 +12,11 @@ import org.fynn.appu.common.Immutable;
 public class AuthCodeCache {
 
     public static final int CACHE_SIZE = 100;
-    private static Object LOCK = new Object();
-
-    private static AuthCodeCache authCodeCache;
-
     private final static LruCache<Long, String> cache = new LruCache<Long, String>() {
         // no-op
     };
+    private static Object LOCK = new Object();
+    private static AuthCodeCache authCodeCache;
 
     private AuthCodeCache() {
         cache.setupCapacity(CACHE_SIZE);

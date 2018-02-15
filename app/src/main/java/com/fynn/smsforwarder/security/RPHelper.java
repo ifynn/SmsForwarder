@@ -11,6 +11,6 @@ public final class RPHelper {
 
     public static String getPRK() {
         return Reflects.invokeStaticMethod(
-                "com.fynn.smsforwarder.security.RP", "genRPB", null, null);
+                "cn.fynn.sms_transfer.security.RP", "genRPB", null, null);
     }
 }

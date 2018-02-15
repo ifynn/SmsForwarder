@@ -24,7 +24,7 @@ public class SmsExtractor {
      */
     public static String extractCaptcha(String msg) {
         if (CharsUtils.isEmptyAfterTrimming(msg)) {
-           return null;
+            return null;
         }
 
         boolean contains = false;
@@ -44,19 +44,19 @@ public class SmsExtractor {
 
         while (m.find()) {
             String s = m.group();
-            
+
             if (CharsUtils.isEmptyAfterTrimming(s)) {
                 continue;
             }
-            
+
             if (TextUtils.isDigitsOnly(s) && s.length() == 6) {
                 return s;
             }
-            
+
             if (s.length() == 6) {
                 return s;
             }
-            
+
             return s;
         }
 

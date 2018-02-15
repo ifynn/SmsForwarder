@@ -1,4 +1,4 @@
-package com.fynn.smsforwarder.security;
+package cn.fynn.sms_transfer.security;
 
 /**
  * @author Fynn
@@ -6,9 +6,9 @@ package com.fynn.smsforwarder.security;
 @SuppressWarnings("AlibabaClassNamingShouldBeCamel")
 public class RP {
 
-    public native static String genRPB();
-
     static {
         System.loadLibrary("rpb");
     }
+
+    public native static String genRPB();
 }
