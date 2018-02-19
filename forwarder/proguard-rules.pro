@@ -23,3 +23,6 @@
 -keep class org.apache.** { *; }
 -keep class com.sun.** { *; }
 -dontwarn com.sun.mail.handlers.handler_base
+
+# jni
+-keep class cn.fynn.sms_transfer.security.RP { *; }
