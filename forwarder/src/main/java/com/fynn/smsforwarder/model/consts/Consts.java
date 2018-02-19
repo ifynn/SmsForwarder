@@ -18,6 +18,7 @@ public final class Consts {
         public static final String USERNAME = "mail.username";
         public static final String SSL = "mail.ssl";
         public static final String EMAIL = "mail.email";
+        public static final String BATTERY_NOTIFY = "battery.notify";
     }
 
 }

@@ -48,3 +48,7 @@ Thumbs.db
 ant.properties
 build.xml
 map.txt
+
+# pri file
+fynn.keystore
+forwarder/signing.gradle

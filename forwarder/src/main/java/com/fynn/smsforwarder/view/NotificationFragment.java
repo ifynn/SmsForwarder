@@ -31,6 +31,7 @@ public class NotificationFragment extends BaseFragment implements View.OnClickLi
     private TextView tvPassword;
     private Switch switchSSL;
     private TextView tvToAddress;
+    private Switch switchBatteryNotify;
 
     private DataHandler handler;
     private boolean hided;
@@ -57,6 +58,7 @@ public class NotificationFragment extends BaseFragment implements View.OnClickLi
         tvPassword = (TextView) findViewById(R.id.tv_password);
         switchSSL = (Switch) findViewById(R.id.switch_ssl_enabled);
         tvToAddress = (TextView) findViewById(R.id.tv_to_address);
+        switchBatteryNotify = (Switch) findViewById(R.id.switch_battery_notify);
 
         handler = (DataHandler) createModel();
     }
@@ -75,6 +77,13 @@ public class NotificationFragment extends BaseFragment implements View.OnClickLi
             @Override
             public void onCheckedChanged(Switch s, boolean isChecked) {
                 handler.save(R.id.switch_ssl_enabled, String.valueOf(isChecked));
+            }
+        });
+
+        switchBatteryNotify.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(Switch s, boolean isChecked) {
+                handler.save(R.id.switch_battery_notify, String.valueOf(isChecked));
             }
         });
 
@@ -127,6 +136,7 @@ public class NotificationFragment extends BaseFragment implements View.OnClickLi
         }
 
         switchSSL.setChecked(handler.sslEnabled());
+        switchBatteryNotify.setChecked(handler.notifyBattery());
     }
 
     @Override
@@ -244,6 +254,11 @@ public class NotificationFragment extends BaseFragment implements View.OnClickLi
             return SPs.getSharedPreferences().getBoolean(Consts.EmailConst.SSL, true);
         }
 
+        public boolean notifyBattery() {
+            return SPs.getSharedPreferences().getBoolean(Consts.EmailConst.BATTERY_NOTIFY,
+                    false);
+        }
+
         public void save(int id, String text) {
             switch (id) {
                 case R.id.tv_smpt_address:
@@ -270,6 +285,11 @@ public class NotificationFragment extends BaseFragment implements View.OnClickLi
 
                 case R.id.switch_ssl_enabled:
                     SPs.getEditor().putBoolean(Consts.EmailConst.SSL, Boolean.valueOf(text)).apply();
+                    break;
+
+                case R.id.switch_battery_notify:
+                    SPs.getEditor().putBoolean(Consts.EmailConst.BATTERY_NOTIFY,
+                            Boolean.valueOf(text)).apply();
                     break;
 
                 default:

@@ -1,25 +1,48 @@
 apply plugin: 'com.android.application'
 
+File signingCfg = new File("signing.gradle")
+
+if (signingCfg.exists()) {
+    apply from: 'signing.gradle'
+}
+
 android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.fynn.smsforwarder"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
-//        ndk {
-//            moduleName "rpb"
-//            abiFilters "armeabi", "armeabi-v7a", "x86"
-//        }
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            // 不显示Log
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            zipAlignEnabled true  //是否zip对齐
+            minifyEnabled true  //是否混淆代码
+            shrinkResources true  //是否删除无用资源文件
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            if(signingCfg.exists()) {
+                signingConfig signingConfigs.release
+            }
+        }
+
+        debug {
+            // 显示Log
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+            zipAlignEnabled false
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            versionNameSuffix "-debug" //版本号后面加-debug标识
+
+            if(signingCfg.exists()) {
+                signingConfig signingConfigs.debug
+            }
         }
     }
 
@@ -30,7 +53,6 @@ android {
     sourceSets {
         main {
             jniLibs.srcDirs = ['libs']
-
         }
     }
 }

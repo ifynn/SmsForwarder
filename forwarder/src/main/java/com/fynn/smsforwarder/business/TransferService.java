@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,7 +18,6 @@ import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.common.SmsManager;
 import com.fynn.smsforwarder.common.ThreadPool;
 import com.fynn.smsforwarder.common.db.Dbs;
-import com.fynn.smsforwarder.common.db.SmsDbHelper;
 import com.fynn.smsforwarder.model.bean.Email;
 import com.fynn.smsforwarder.model.bean.InboxSms;
 import com.fynn.smsforwarder.view.MainActivity;
@@ -32,6 +32,8 @@ import java.util.Date;
  * @date 18/2/13
  */
 public class TransferService extends Service {
+
+    public static long mLastBatteryNotify = 0;
 
     private ContentObserver observer;
 
@@ -80,6 +82,8 @@ public class TransferService extends Service {
         }
     };
 
+    private BatteryChangeReceiver mBatteryReceiver;
+
     public static void start(Context context) {
         Intent service = new Intent(context, TransferService.class);
         context.startService(service);
@@ -92,6 +96,12 @@ public class TransferService extends Service {
 
         observer = new SmsContentObserver();
         SmsManager.registerContentObserver(observer);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_BATTERY_CHANGED);
+
+        mBatteryReceiver = new BatteryChangeReceiver();
+        registerReceiver(mBatteryReceiver, filter);
     }
 
     @Nullable
@@ -139,6 +149,9 @@ public class TransferService extends Service {
 
         ThreadPool.getInstance().shutdown();
         stopForeground(true);
+
+        unregisterReceiver(mBatteryReceiver);
+        mBatteryReceiver = null;
     }
 
     class SmsContentObserver extends ContentObserver {
