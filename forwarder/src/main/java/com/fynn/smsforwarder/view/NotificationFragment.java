@@ -10,14 +10,11 @@ import com.fynn.smsforwarder.base.BaseFragment;
 import com.fynn.smsforwarder.base.BasePresenter;
 import com.fynn.smsforwarder.base.Model;
 import com.fynn.smsforwarder.common.db.SPs;
-import com.fynn.smsforwarder.model.consts.Consts;
-import com.fynn.smsforwarder.security.RPHelper;
 import com.fynn.switcher.Switch;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 
 import org.fynn.appu.util.CharsUtils;
-import org.fynn.appu.util.RSAHelper;
 import org.fynn.appu.util.ToastUtils;
 
 /**
@@ -230,72 +227,66 @@ public class NotificationFragment extends BaseFragment implements View.OnClickLi
     class DataHandler implements Model {
 
         public String getSMTPAddress() {
-            return SPs.getSharedPreferences().getString(Consts.EmailConst.SERVER_HOST, "");
+            return SPs.getServerHost();
         }
 
         public String getSMTPPort() {
-            return SPs.getSharedPreferences().getString(Consts.EmailConst.SERVER_PORT, "");
+            return SPs.getServerPort();
         }
 
         public String getToAddress() {
-            return SPs.getSharedPreferences().getString(Consts.EmailConst.EMAIL, "");
+            return SPs.getEmail();
         }
 
         public String getPassword() {
-            return RSAHelper.decipher(Consts.PUB_KEY,
-                    SPs.getSharedPreferences().getString(Consts.EmailConst.PASSWORD, ""));
+            return SPs.getPassword();
         }
 
         public String getUsername() {
-            return SPs.getSharedPreferences().getString(Consts.EmailConst.USERNAME, "");
+            return SPs.getUsername();
         }
 
         public boolean sslEnabled() {
-            return SPs.getSharedPreferences().getBoolean(Consts.EmailConst.SSL, true);
+            return SPs.isEnabledSSL();
         }
 
         public boolean notifyBattery() {
-            return SPs.getSharedPreferences().getBoolean(Consts.EmailConst.BATTERY_NOTIFY,
-                    false);
+            return SPs.isBatteryNotify();
         }
 
         public void save(int id, String text) {
             switch (id) {
                 case R.id.tv_smpt_address:
-                    SPs.getEditor().putString(Consts.EmailConst.SERVER_HOST, text).apply();
+                    SPs.saveServerHost(text);
                     break;
 
                 case R.id.tv_smpt_port:
-                    SPs.getEditor().putString(Consts.EmailConst.SERVER_PORT, text).apply();
+                    SPs.saveServerPort(text);
                     break;
 
                 case R.id.tv_username:
-                    SPs.getEditor().putString(Consts.EmailConst.USERNAME, text).apply();
+                    SPs.saveUsername(text);
                     break;
 
                 case R.id.tv_password:
-                    SPs.getEditor().putString(
-                            Consts.EmailConst.PASSWORD,
-                            RSAHelper.cipher(RPHelper.getPRK(), text)).apply();
+                    SPs.savePassword(text);
                     break;
 
                 case R.id.tv_to_address:
-                    SPs.getEditor().putString(Consts.EmailConst.EMAIL, text).apply();
+                    SPs.saveEmail(text);
                     break;
 
                 case R.id.switch_ssl_enabled:
-                    SPs.getEditor().putBoolean(Consts.EmailConst.SSL, Boolean.valueOf(text)).apply();
+                    SPs.saveSSL(Boolean.valueOf(text));
                     break;
 
                 case R.id.switch_battery_notify:
-                    SPs.getEditor().putBoolean(Consts.EmailConst.BATTERY_NOTIFY,
-                            Boolean.valueOf(text)).apply();
+                    SPs.saveBatteryNotify(Boolean.valueOf(text));
                     break;
 
                 default:
                     break;
             }
         }
-
     }
 }

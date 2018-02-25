@@ -11,6 +11,9 @@ import com.fynn.smsforwarder.model.bean.Sms;
 
 import org.fynn.appu.AppU;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author lifs
  * @date 18/2/13
@@ -76,5 +79,34 @@ public final class Dbs {
         synchronized (Dbs.class) {
             return SmsDbHelper.get().insert(values);
         }
+    }
+
+    public static List readSms(Cursor cursor) {
+        ArrayList<Sms> smses = new ArrayList<Sms>();
+
+        if (cursor == null) {
+            return smses;
+        }
+
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(cursor.getColumnIndex(SmsDbHelper.ID));
+            String from = cursor.getString(cursor.getColumnIndex(SmsDbHelper.ADDRESS));
+            String content = cursor.getString(cursor.getColumnIndex(SmsDbHelper.BODY));
+            long date = cursor.getLong(cursor.getColumnIndex(SmsDbHelper.DATE));
+
+            Sms sms = new Sms();
+            sms.address = from;
+            sms.date = date;
+            sms.id = id;
+            sms.msg = content;
+
+            smses.add(sms);
+        }
+
+        if (!cursor.isClosed()) {
+            cursor.close();
+        }
+
+        return smses;
     }
 }

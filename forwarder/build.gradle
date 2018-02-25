@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat
+
 apply plugin: 'com.android.application'
 
 File signingCfg = new File("signing.gradle")
@@ -12,8 +14,8 @@ android {
         applicationId "com.fynn.smsforwarder"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 2
-        versionName "1.0.1"
+        versionCode 3
+        versionName "1.0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -25,8 +27,9 @@ android {
             minifyEnabled true  //是否混淆代码
             shrinkResources true  //是否删除无用资源文件
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue "string", "app_name", "短信转移"
 
-            if(signingCfg.exists()) {
+            if (signingCfg.exists()) {
                 signingConfig signingConfigs.release
             }
         }
@@ -39,8 +42,10 @@ android {
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             versionNameSuffix "-debug" //版本号后面加-debug标识
+            applicationIdSuffix ".debug"
+            resValue "string", "app_name", "短信转移-debug"
 
-            if(signingCfg.exists()) {
+            if (signingCfg.exists()) {
                 signingConfig signingConfigs.debug
             }
         }
@@ -55,6 +60,12 @@ android {
             jniLibs.srcDirs = ['libs']
         }
     }
+}
+
+def now() {
+    def df = new SimpleDateFormat("yyyyMMdd")
+    df.setTimeZone(TimeZone.getDefault())
+    return df.format(new Date())
 }
 
 dependencies {

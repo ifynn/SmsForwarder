@@ -1,5 +1,9 @@
 package com.fynn.smsforwarder.model.consts;
 
+import com.fynn.smsforwarder.common.db.SmsDbHelper;
+
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * @author Fynn
  * @date 18/2/13
@@ -20,5 +24,7 @@ public final class Consts {
         public static final String EMAIL = "mail.email";
         public static final String BATTERY_NOTIFY = "battery.notify";
     }
+
+    public static AtomicLong sSmsCount = new AtomicLong(SmsDbHelper.get().getCount());
 
 }

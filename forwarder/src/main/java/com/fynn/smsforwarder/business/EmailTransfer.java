@@ -3,10 +3,8 @@ package com.fynn.smsforwarder.business;
 import com.fynn.smsforwarder.common.db.SPs;
 import com.fynn.smsforwarder.model.bean.Email;
 import com.fynn.smsforwarder.model.bean.UserAuthenticator;
-import com.fynn.smsforwarder.model.consts.Consts;
 
 import org.fynn.appu.util.CharsUtils;
-import org.fynn.appu.util.RSAHelper;
 
 import java.util.Date;
 import java.util.Properties;
@@ -103,14 +101,12 @@ public class EmailTransfer {
      * @return
      */
     public static Email genEmailData(String subject, String content, String nickname) {
-        String serverHost = SPs.getSharedPreferences().getString(Consts.EmailConst.SERVER_HOST, "");
-        String serverPort = SPs.getSharedPreferences().getString(Consts.EmailConst.SERVER_PORT, "");
-        String username = SPs.getSharedPreferences().getString(Consts.EmailConst.USERNAME, "");
-        String email = SPs.getSharedPreferences().getString(Consts.EmailConst.EMAIL, "");
-        boolean ssl = SPs.getSharedPreferences().getBoolean(Consts.EmailConst.SSL, true);
-
-        String password = SPs.getSharedPreferences().getString(Consts.EmailConst.PASSWORD, "");
-        password = RSAHelper.decipher(Consts.PUB_KEY, password);
+        String serverHost = SPs.getServerHost();
+        String serverPort = SPs.getServerPort();
+        String username = SPs.getUsername();
+        String email = SPs.getEmail();
+        boolean ssl = SPs.isEnabledSSL();
+        String password = SPs.getPassword();
 
         Email data = new Email();
         data.enabledSSL = ssl;

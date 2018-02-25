@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 
 import com.fynn.smsforwarder.common.db.SPs;
 import com.fynn.smsforwarder.model.bean.Email;
-import com.fynn.smsforwarder.model.consts.Consts;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -27,8 +26,7 @@ public class BatteryIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        boolean notification = SPs.getSharedPreferences().getBoolean(
-                Consts.EmailConst.BATTERY_NOTIFY, false);
+        boolean notification = SPs.isBatteryNotify();
 
         if (!notification) {
             return;
@@ -38,15 +36,14 @@ public class BatteryIntentService extends IntentService {
         long minutes = TimeUnit.MILLISECONDS.toMinutes(
                 now - TransferService.mLastBatteryNotify);
 
-        if (minutes <= 10) {
+        if (minutes <= 15) {
             return;
         }
 
         int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS,
                 BatteryManager.BATTERY_STATUS_UNKNOWN);
 
-        if (status == BatteryManager.BATTERY_STATUS_CHARGING ||
-                status == BatteryManager.BATTERY_STATUS_FULL) {
+        if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
             return;
         }
 
@@ -63,7 +60,13 @@ public class BatteryIntentService extends IntentService {
             return;
         }
 
-        String msg = "电量过低 (" + percent + "%)，请充电!";
+        String msg = null;
+
+        if (status == BatteryManager.BATTERY_STATUS_FULL) {
+            msg = "已充满电！";
+        } else {
+            msg = "电量过低 (" + percent + "%)，请充电!";
+        }
 
         Email email = EmailTransfer.genEmailData(msg, msg, "短信转移");
 

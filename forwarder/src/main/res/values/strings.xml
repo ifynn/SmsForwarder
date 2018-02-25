@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">短信转移</string>
+    <!--<string name="app_name">短信转移</string>-->
     <string name="title_home">短信转移</string>
     <string name="title_dashboard">发送记录</string>
     <string name="title_notifications">通知</string>
@@ -7,6 +7,4 @@
     <string name="notice_status_bar_ticker">短信转移服务已开启</string>
     <string name="notice_status_bar_content_title">短信转移正在为您服务</string>
     <string name="notice_status_bar_content_text">触摸进入应用</string>
-
-    触摸进入应用
 </resources>

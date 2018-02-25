@@ -26,4 +26,13 @@ public class Sms {
      */
     public long id;
 
+    @Override
+    public String toString() {
+        return "Sms{" +
+                "address='" + address + '\'' +
+                ", msg='" + msg + '\'' +
+                ", date=" + date +
+                ", id=" + id +
+                '}';
+    }
 }

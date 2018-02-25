@@ -100,14 +100,13 @@ public class SmsDbHelper extends SQLiteOpenHelper {
 
         try {
             c = db.query(TABLE_NAME, new String[]{ID, ADDRESS, BODY, DATE},
-                    null, null, null, null, null);
+                    null, null, null, null, ID + " desc");
             db.setTransactionSuccessful();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             db.endTransaction();
         }
-        c.close();
         return c;
     }
 
@@ -137,18 +136,17 @@ public class SmsDbHelper extends SQLiteOpenHelper {
             db.close();
         }
 
-        cursor.close();
         return cursor;
     }
 
     /**
      * 分页查询
      *
-     * @param limit
-     * @param offset
+     * @param offset 偏移位置
+     * @param limit 每页数量
      * @return
      */
-    public Cursor queryPage(int limit, int offset) {
+    public Cursor queryPage(int offset, int limit) {
         SQLiteDatabase db = getReadableDatabase();
 
         if (!db.isOpen()) {
@@ -160,7 +158,7 @@ public class SmsDbHelper extends SQLiteOpenHelper {
 
         try {
             c = db.query(TABLE_NAME, new String[]{ID, ADDRESS, BODY, DATE},
-                    null, null, null, null, null, limit + "," + offset);
+                    null, null, null, null, ID + " desc", offset + "," + limit);
             db.setTransactionSuccessful();
         } catch (Exception e) {
             e.printStackTrace();
@@ -168,7 +166,6 @@ public class SmsDbHelper extends SQLiteOpenHelper {
             db.endTransaction();
         }
 
-        c.close();
         return c;
     }
 
