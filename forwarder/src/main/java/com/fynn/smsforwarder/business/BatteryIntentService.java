@@ -26,12 +26,6 @@ public class BatteryIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        boolean notification = SPs.isBatteryNotify();
-
-        if (!notification) {
-            return;
-        }
-
         long now = new Date().getTime();
         long minutes = TimeUnit.MILLISECONDS.toMinutes(
                 now - TransferService.mLastBatteryNotify);
@@ -47,6 +41,12 @@ public class BatteryIntentService extends IntentService {
             return;
         }
 
+        boolean notification = SPs.isBatteryNotify();
+
+        if (!notification) {
+            return;
+        }
+
         int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
 
@@ -56,11 +56,11 @@ public class BatteryIntentService extends IntentService {
 
         int percent = (level * 100) / scale;
 
-        if (percent < 0 || percent > 15) {
+        if (percent < 0 || percent > 15 && percent < 100) {
             return;
         }
 
-        String msg = null;
+        String msg;
 
         if (status == BatteryManager.BATTERY_STATUS_FULL) {
             msg = "已充满电！";
