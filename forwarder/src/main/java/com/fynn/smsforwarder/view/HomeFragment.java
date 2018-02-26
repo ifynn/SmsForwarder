@@ -8,7 +8,6 @@ import com.fynn.smsforwarder.base.BaseFragment;
 import com.fynn.smsforwarder.base.BasePresenter;
 import com.fynn.smsforwarder.base.Model;
 import com.fynn.smsforwarder.common.db.SmsDbHelper;
-import com.fynn.smsforwarder.model.consts.Consts;
 
 import org.fynn.appu.util.LogU;
 
@@ -40,8 +39,7 @@ public class HomeFragment extends BaseFragment {
 
     @Override
     protected void initActions(Bundle savedInstanceState) {
-        Consts.sSmsCount.set(SmsDbHelper.get().getCount());
-        tvCount.setText(Consts.sSmsCount + "");
+        tvCount.setText(SmsDbHelper.get().getCount() + "");
     }
 
     @Override
@@ -69,7 +67,7 @@ public class HomeFragment extends BaseFragment {
         }
 
         if (tvCount != null) {
-            tvCount.setText(Consts.sSmsCount + "");
+            tvCount.setText(SmsDbHelper.get().getCount() + "");
         }
     }
 }

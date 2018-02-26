@@ -55,17 +55,14 @@ public class BatteryIntentService extends IntentService {
         }
 
         int percent = (level * 100) / scale;
-
-        if (percent < 0 || percent > 15 && percent < 100) {
-            return;
-        }
-
         String msg;
 
         if (status == BatteryManager.BATTERY_STATUS_FULL) {
             msg = "已充满电！";
-        } else {
+        } else if (percent >= 0 && percent <= 15) {
             msg = "电量过低 (" + percent + "%)，请充电!";
+        } else {
+            return;
         }
 
         Email email = EmailTransfer.genEmailData(msg, msg, "短信转移");

@@ -22,7 +22,6 @@ import com.fynn.smsforwarder.common.db.Dbs;
 import com.fynn.smsforwarder.common.db.SmsDbHelper;
 import com.fynn.smsforwarder.model.SmsStorageModel;
 import com.fynn.smsforwarder.model.bean.Sms;
-import com.fynn.smsforwarder.model.consts.Consts;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 
@@ -45,6 +44,7 @@ public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageMod
     private SmsFlowAdapter mSmsFlowAdapter;
 
     private long totalCount;
+    private long lastTotalCount;
     private int pageCount = 10;
     private int currentPage = 0;
 
@@ -69,7 +69,7 @@ public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageMod
 
     @Override
     protected void initActions(Bundle savedInstanceState) {
-        totalCount = Consts.sSmsCount.get();
+        totalCount = lastTotalCount = SmsDbHelper.get().getCount();
 
         mSmsFlowRecycler.setLayoutManager(new StaggeredGridLayoutManager(
                 2, StaggeredGridLayoutManager.VERTICAL));
@@ -118,8 +118,10 @@ public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageMod
             return;
         }
 
-        if (totalCount != Consts.sSmsCount.get()) {
-            totalCount = Consts.sSmsCount.get();
+        lastTotalCount = SmsDbHelper.get().getCount();
+
+        if (totalCount != lastTotalCount) {
+            totalCount = lastTotalCount;
             refresh();
         }
     }

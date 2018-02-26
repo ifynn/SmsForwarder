@@ -20,11 +20,11 @@ import com.fynn.smsforwarder.common.ThreadPool;
 import com.fynn.smsforwarder.common.db.Dbs;
 import com.fynn.smsforwarder.model.bean.Email;
 import com.fynn.smsforwarder.model.bean.InboxSms;
-import com.fynn.smsforwarder.model.consts.Consts;
 import com.fynn.smsforwarder.view.MainActivity;
 
 import org.fynn.appu.util.CharsUtils;
 import org.fynn.appu.util.DateHelper;
+import org.fynn.appu.util.ToastUtils;
 
 import java.util.Date;
 
@@ -76,12 +76,11 @@ public class TransferService extends Service {
 
             try {
                 EmailTransfer.send(email);
-                long r = Dbs.insert(s);
-                if (r >= 0) {
-                    Consts.sSmsCount.incrementAndGet();
-                }
+                Dbs.insert(s);
+
             } catch (Exception e) {
                 e.printStackTrace();
+                ToastUtils.showLongToast(e.toString());
             }
         }
     };
