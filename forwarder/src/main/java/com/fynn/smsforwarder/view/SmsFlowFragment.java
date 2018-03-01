@@ -16,13 +16,10 @@ import android.widget.TextView;
 
 import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.base.BaseFragment;
-import com.fynn.smsforwarder.business.SmsFlowPresenter;
+import com.fynn.smsforwarder.business.presenter.DefaultPresenter;
 import com.fynn.smsforwarder.common.SmsExtractor;
-import com.fynn.smsforwarder.common.db.Dbs;
-import com.fynn.smsforwarder.common.db.SmsDbHelper;
 import com.fynn.smsforwarder.model.SmsStorageModel;
 import com.fynn.smsforwarder.model.bean.Sms;
-import com.fynn.smsforwarder.model.consts.Consts;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 
@@ -37,7 +34,7 @@ import java.util.List;
 /**
  * @author fynn
  */
-public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageModel, SmsFlowPresenter> {
+public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, DefaultPresenter> {
 
     private RecyclerView mSmsFlowRecycler;
 
@@ -48,12 +45,15 @@ public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageMod
     private int pageCount = 10;
     private int currentPage = 0;
 
+    private ViewInteraction interaction;
+
     public SmsFlowFragment() {
         // Required empty public constructor
     }
 
-    public static SmsFlowFragment newInstance() {
+    public static SmsFlowFragment newInstance(ViewInteraction interaction) {
         SmsFlowFragment fragment = new SmsFlowFragment();
+        fragment.interaction = interaction;
         return fragment;
     }
 
@@ -69,7 +69,7 @@ public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageMod
 
     @Override
     protected void initActions(Bundle savedInstanceState) {
-        totalCount = Consts.sSmsCount.get();
+        totalCount = mPresenter.getDbRecordCount();
 
         mSmsFlowRecycler.setLayoutManager(new StaggeredGridLayoutManager(
                 2, StaggeredGridLayoutManager.VERTICAL));
@@ -118,8 +118,8 @@ public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageMod
             return;
         }
 
-        if (totalCount != Consts.sSmsCount.get()) {
-            totalCount = Consts.sSmsCount.get();
+        if (totalCount != mPresenter.getDbRecordCount()) {
+            totalCount = mPresenter.getDbRecordCount();
             refresh();
         }
     }
@@ -127,7 +127,7 @@ public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageMod
     private void refresh() {
         mSmsList.clear();
         currentPage = 0;
-        mSmsList.addAll(Dbs.readSms(SmsDbHelper.get().queryPage(currentPage * pageCount, pageCount)));
+        mSmsList.addAll(mPresenter.readSms(currentPage * pageCount, pageCount));
         mSmsFlowAdapter.notifyDataSetChanged();
     }
 
@@ -137,18 +137,18 @@ public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageMod
         }
 
         currentPage ++;
-        mSmsList.addAll(Dbs.readSms(SmsDbHelper.get().queryPage(currentPage * pageCount, pageCount)));
+        mSmsList.addAll(mPresenter.readSms(currentPage * pageCount, pageCount));
         mSmsFlowAdapter.notifyDataSetChanged();
     }
 
     @Override
-    protected SmsFlowPresenter createPresenter() {
-        return new SmsFlowPresenter();
+    protected DefaultPresenter createPresenter() {
+        return new DefaultPresenter();
     }
 
     @Override
     protected SmsStorageModel createModel() {
-        return new SmsStorageModel();
+        return interaction.getModel();
     }
 
     static class ItemDivider extends RecyclerView.ItemDecoration {

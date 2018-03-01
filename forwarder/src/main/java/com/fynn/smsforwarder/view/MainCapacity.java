@@ -13,15 +13,16 @@ import android.widget.TextView;
 
 import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.base.BaseActivityCapacity;
-import com.fynn.smsforwarder.base.BasePresenter;
-import com.fynn.smsforwarder.base.Model;
+import com.fynn.smsforwarder.business.presenter.DefaultPresenter;
+import com.fynn.smsforwarder.model.SmsStorageModel;
 
 /**
  * @author fynn
  * @date 2018/2/4
  */
 
-public class MainCapacity extends BaseActivityCapacity {
+public class MainCapacity extends BaseActivityCapacity<BaseView, SmsStorageModel, DefaultPresenter>
+        implements BaseView, ViewInteraction {
 
     private Fragment[] mFragments;
 
@@ -65,9 +66,9 @@ public class MainCapacity extends BaseActivityCapacity {
     @Override
     protected void initViews(Bundle savedInstanceState) {
         mFragments = new Fragment[]{
-                HomeFragment.newInstance(),
-                SmsFlowFragment.newInstance(),
-                NotificationFragment.newInstance()
+                HomeFragment.newInstance(this),
+                SmsFlowFragment.newInstance(this),
+                NotificationFragment.newInstance(this)
         };
 
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
@@ -114,13 +115,18 @@ public class MainCapacity extends BaseActivityCapacity {
     }
 
     @Override
-    protected BasePresenter createPresenter() {
-        return null;
+    protected DefaultPresenter createPresenter() {
+        return new DefaultPresenter();
     }
 
     @Override
-    protected Model createModel() {
-        return null;
+    protected SmsStorageModel createModel() {
+        return new SmsStorageModel();
+    }
+
+    @Override
+    public SmsStorageModel getModel() {
+        return mPresenter.getModel();
     }
 
     class FragmentAdapter extends FragmentPagerAdapter {

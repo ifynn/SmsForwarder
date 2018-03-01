@@ -5,26 +5,26 @@ import android.widget.TextView;
 
 import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.base.BaseFragment;
-import com.fynn.smsforwarder.base.BasePresenter;
-import com.fynn.smsforwarder.base.Model;
-import com.fynn.smsforwarder.common.db.SmsDbHelper;
-import com.fynn.smsforwarder.model.consts.Consts;
-
-import org.fynn.appu.util.LogU;
+import com.fynn.smsforwarder.business.presenter.DefaultPresenter;
+import com.fynn.smsforwarder.model.SmsStorageModel;
 
 /**
  * @author fynn
  */
-public class HomeFragment extends BaseFragment {
+public class HomeFragment extends BaseFragment<BaseView, SmsStorageModel, DefaultPresenter>
+        implements BaseView {
 
     private TextView tvCount;
+
+    private ViewInteraction interaction;
 
     public HomeFragment() {
         // Required empty public constructor
     }
 
-    public static HomeFragment newInstance() {
+    public static HomeFragment newInstance(ViewInteraction interaction) {
         HomeFragment fragment = new HomeFragment();
+        fragment.interaction = interaction;
         return fragment;
     }
 
@@ -40,24 +40,17 @@ public class HomeFragment extends BaseFragment {
 
     @Override
     protected void initActions(Bundle savedInstanceState) {
-        Consts.sSmsCount.set(SmsDbHelper.get().getCount());
-        tvCount.setText(Consts.sSmsCount + "");
+        tvCount.setText(mPresenter.getDbRecordCount() + "");
     }
 
     @Override
-    protected BasePresenter createPresenter() {
-        return null;
+    protected DefaultPresenter createPresenter() {
+        return new DefaultPresenter();
     }
 
     @Override
-    protected Model createModel() {
-        return null;
-    }
-
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        LogU.e("onHiddenChanged", hidden);
+    protected SmsStorageModel createModel() {
+        return interaction.getModel();
     }
 
     @Override
@@ -69,7 +62,7 @@ public class HomeFragment extends BaseFragment {
         }
 
         if (tvCount != null) {
-            tvCount.setText(Consts.sSmsCount + "");
+            tvCount.setText(mPresenter.getDbRecordCount() + "");
         }
     }
 }

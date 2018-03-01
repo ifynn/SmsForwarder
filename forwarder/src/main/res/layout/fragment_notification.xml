@@ -86,7 +86,8 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:paddingTop="15dp"
-            android:text="密码"
+            android:hint="密码"
+            android:textColorHint="#333333"
             android:textColor="#333333"
             android:textSize="14sp"/>
 
