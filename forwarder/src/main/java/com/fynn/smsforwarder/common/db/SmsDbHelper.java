@@ -170,6 +170,36 @@ public class SmsDbHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * 分页查询
+     *
+     * @param offset 偏移位置
+     * @param limit 每页数量
+     * @return 返回 id
+     */
+    public Cursor queryIdPage(int offset, int limit) {
+        SQLiteDatabase db = getReadableDatabase();
+
+        if (!db.isOpen()) {
+            return null;
+        }
+
+        Cursor c = null;
+        db.beginTransaction();
+
+        try {
+            c = db.query(TABLE_NAME, new String[]{ID}, null, null, null, null,
+                    ID + " desc", offset + "," + limit);
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+        }
+
+        return c;
+    }
+
+    /**
      * 获取总记录数
      *
      * @return

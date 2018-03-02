@@ -1,6 +1,6 @@
 package com.fynn.smsforwarder.common;
 
-import android.text.TextUtils;
+import android.util.Pair;
 
 import org.fynn.appu.util.CharsUtils;
 
@@ -12,9 +12,9 @@ import java.util.regex.Pattern;
  */
 public class SmsExtractor {
 
-    private static final String SMS_REGEX = "[0-9a-zA-Z]{6}";
+    private static final String SMS_REGEX = "[\\da-zA-Z]{6}|[\\d]{4}";
 
-    private static final String[] CODES = {"验证码", "校验码"};
+    private static final String[] CODES = {"验证码", "校验码", "随机码"};
 
     /**
      * 解析短信中的验证码
@@ -22,21 +22,21 @@ public class SmsExtractor {
      * @param msg
      * @return
      */
-    public static String extractCaptcha(String msg) {
+    public static Pair<String, String> extractCaptcha(String msg) {
         if (CharsUtils.isEmptyAfterTrimming(msg)) {
             return null;
         }
 
-        boolean contains = false;
+        String matching = null;
 
         for (String code : CODES) {
             if (msg.contains(code)) {
-                contains = true;
+                matching = code;
                 break;
             }
         }
 
-        if (!contains) {
+        if (CharsUtils.isEmpty(matching)) {
             return null;
         }
 
@@ -60,7 +60,7 @@ public class SmsExtractor {
             }
         }
 
-        return code;
+        return Pair.create(matching, code);
     }
 
     static class Patterns {

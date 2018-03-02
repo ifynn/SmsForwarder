@@ -3,7 +3,6 @@ package com.fynn.smsforwarder.business.presenter;
 import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.base.BasePresenter;
 import com.fynn.smsforwarder.common.db.Dbs;
-import com.fynn.smsforwarder.common.db.SmsDbHelper;
 import com.fynn.smsforwarder.model.SmsStorageModel;
 import com.fynn.smsforwarder.view.BaseView;
 import com.fynn.smsforwarder.view.NotificationFragment;
@@ -70,6 +69,6 @@ public class DefaultPresenter extends BasePresenter<BaseView, SmsStorageModel> {
     }
 
     public List readSms(int offsetStart, int pageCount) {
-        return Dbs.readSms(SmsDbHelper.get().queryPage(offsetStart, pageCount));
+        return Dbs.readSmsPage(offsetStart, pageCount);
     }
 }

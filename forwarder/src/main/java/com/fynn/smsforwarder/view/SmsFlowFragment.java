@@ -8,6 +8,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.util.Linkify;
+import android.util.Pair;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +17,8 @@ import android.widget.TextView;
 
 import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.base.BaseFragment;
+import com.fynn.smsforwarder.business.AuthCodeCache;
 import com.fynn.smsforwarder.business.presenter.DefaultPresenter;
-import com.fynn.smsforwarder.common.SmsExtractor;
 import com.fynn.smsforwarder.model.SmsStorageModel;
 import com.fynn.smsforwarder.model.bean.Sms;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
@@ -46,6 +47,7 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
     private int currentPage = 0;
 
     private ViewInteraction interaction;
+    private boolean refreshing;
 
     public SmsFlowFragment() {
         // Required empty public constructor
@@ -71,8 +73,11 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
     protected void initActions(Bundle savedInstanceState) {
         totalCount = mPresenter.getDbRecordCount();
 
-        mSmsFlowRecycler.setLayoutManager(new StaggeredGridLayoutManager(
-                2, StaggeredGridLayoutManager.VERTICAL));
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(
+                2, StaggeredGridLayoutManager.VERTICAL);
+        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
+
+        mSmsFlowRecycler.setLayoutManager(layoutManager);
         mSmsFlowRecycler.addItemDecoration(
                 ItemDivider.newInstance(0xffcccccc, DensityUtils.dip2px(6)));
 
@@ -83,11 +88,16 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
+
+                StaggeredGridLayoutManager manager = (StaggeredGridLayoutManager)
+                        recyclerView.getLayoutManager();
+                manager.invalidateSpanAssignments();
+
                 if (newState != RecyclerView.SCROLL_STATE_IDLE) {
                     return;
                 }
 
-                StaggeredGridLayoutManager manager = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
+                // recyclerView.invalidateItemDecorations();
 
                 if (manager.getChildCount() <= 0) {
                     return;
@@ -125,20 +135,31 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
     }
 
     private void refresh() {
+        if (refreshing) {
+            return;
+        }
+        refreshing = true;
         mSmsList.clear();
         currentPage = 0;
         mSmsList.addAll(mPresenter.readSms(currentPage * pageCount, pageCount));
         mSmsFlowAdapter.notifyDataSetChanged();
+        refreshing = false;
     }
 
     private void fetchNextPage() {
+        if (refreshing) {
+            return;
+        }
+
         if (mSmsList.size() >= totalCount) {
             return;
         }
 
+        refreshing = true;
         currentPage ++;
         mSmsList.addAll(mPresenter.readSms(currentPage * pageCount, pageCount));
         mSmsFlowAdapter.notifyDataSetChanged();
+        refreshing = false;
     }
 
     @Override
@@ -212,8 +233,9 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
         public void onBindViewHolder(final SmsViewHolder holder, int position) {
             final Sms s = mSmsList.get(position);
 
-            String code = SmsExtractor.extractCaptcha(s.msg);
-            boolean hasCode = !CharsUtils.isEmptyAfterTrimming(code);
+            Pair<String, String> p = AuthCodeCache.get().fetchCode(s);
+            boolean hasCode = !CharsUtils.isEmptyAfterTrimming(p.first) &&
+                    !CharsUtils.isEmptyAfterTrimming(p.second);
 
             if (!hasCode) {
                 holder.mWatchDetails.setVisibility(View.GONE);
@@ -235,7 +257,8 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
                     }
                 });
 
-                holder.mSmsCode.setText(code);
+                holder.mSmsCode.setText(p.second);
+                holder.mSmsCodeDesc.setText(p.first);
             }
 
             if (!hasCode) {

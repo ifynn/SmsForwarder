@@ -1,5 +1,7 @@
 package com.fynn.smsforwarder.business;
 
+import android.util.Pair;
+
 import com.fynn.smsforwarder.common.SmsExtractor;
 import com.fynn.smsforwarder.model.bean.Sms;
 
@@ -12,10 +14,10 @@ import org.fynn.appu.cache.LruCache;
 public class AuthCodeCache {
 
     public static final int CACHE_SIZE = 100;
-    private final static LruCache<Long, String> cache = new LruCache<Long, String>() {
+    private final static LruCache<Long, Pair> cache = new LruCache<Long, Pair>() {
         // no-op
     };
-    private static Object LOCK = new Object();
+    private static final Object LOCK = new Object();
     private static AuthCodeCache authCodeCache;
 
     private AuthCodeCache() {
@@ -33,20 +35,21 @@ public class AuthCodeCache {
         return authCodeCache;
     }
 
-    public String fetchCode(Sms sms) {
+    public Pair fetchCode(Sms sms) {
         if (sms == null) {
-            return "";
+            return null;
         }
 
-        String s = cache.get(sms.id);
+        Pair p = cache.get(sms.id);
 
-        if (s != null) {
-            return s;
+        if (p != null) {
+            return p;
         }
 
-        String code = SmsExtractor.extractCaptcha(sms.msg);
-
-        cache.put(sms.id, code == null ? "" : code);
+        Pair code = SmsExtractor.extractCaptcha(sms.msg);
+        synchronized (LOCK) {
+            cache.put(sms.id, code == null ? Pair.create("", "") : code);
+        }
         return code;
     }
 }
