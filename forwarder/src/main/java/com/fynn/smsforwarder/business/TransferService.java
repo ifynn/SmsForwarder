@@ -56,7 +56,7 @@ public class TransferService extends Service {
 
             String subject;
 
-            if (!CharsUtils.isEmptyAfterTrimming(code.first) &&
+            if (code != null && !CharsUtils.isEmptyAfterTrimming(code.first) &&
                     !CharsUtils.isEmptyAfterTrimming(code.second)) {
                 subject = code.second + " (" + code.first + ")【" + senderName + "】";
             } else {
@@ -120,7 +120,6 @@ public class TransferService extends Service {
         Bitmap icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher, options);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, null);
-        // todo 图标设置 alpha
         builder.setSmallIcon(R.mipmap.ic_launcher_round);
         builder.setLargeIcon(icon);
         builder.setWhen(System.currentTimeMillis());

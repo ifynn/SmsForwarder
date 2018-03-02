@@ -29,12 +29,6 @@ public class BatteryIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        boolean notification = SPs.isBatteryNotify();
-
-        if (!notification) {
-            return;
-        }
-
         int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS,
                 BatteryManager.BATTERY_STATUS_UNKNOWN);
 
@@ -54,13 +48,13 @@ public class BatteryIntentService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-
         boolean notification = SPs.isBatteryNotify();
+
         if (!notification) {
             return;
         }
 
-        observable = new Observable();
+        observable = new BatteryStatusObservable();
         observable.addObserver(new LowBatteryMessenger());
         observable.addObserver(new FullBatteryMessenger());
     }

@@ -124,6 +124,7 @@ public class SmsDbHelper extends SQLiteOpenHelper {
         }
 
         Cursor cursor = null;
+        db.beginTransaction();
 
         try {
             cursor = db.query(TABLE_NAME, new String[]{ID, ADDRESS, BODY, DATE},
@@ -133,7 +134,6 @@ public class SmsDbHelper extends SQLiteOpenHelper {
             e.printStackTrace();
         } finally {
             db.endTransaction();
-            db.close();
         }
 
         return cursor;

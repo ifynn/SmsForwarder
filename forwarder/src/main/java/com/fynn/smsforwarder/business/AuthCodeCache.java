@@ -47,8 +47,13 @@ public class AuthCodeCache {
         }
 
         Pair code = SmsExtractor.extractCaptcha(sms.msg);
+
+        if (code == null) {
+            code = Pair.create("", "");
+        }
+
         synchronized (LOCK) {
-            cache.put(sms.id, code == null ? Pair.create("", "") : code);
+            cache.put(sms.id, code);
         }
         return code;
     }

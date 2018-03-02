@@ -75,7 +75,6 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
 
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(
                 2, StaggeredGridLayoutManager.VERTICAL);
-        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
 
         mSmsFlowRecycler.setLayoutManager(layoutManager);
         mSmsFlowRecycler.addItemDecoration(
@@ -89,15 +88,13 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
 
-                StaggeredGridLayoutManager manager = (StaggeredGridLayoutManager)
-                        recyclerView.getLayoutManager();
-                manager.invalidateSpanAssignments();
-
                 if (newState != RecyclerView.SCROLL_STATE_IDLE) {
                     return;
                 }
 
-                // recyclerView.invalidateItemDecorations();
+                recyclerView.invalidateItemDecorations();
+                StaggeredGridLayoutManager manager = (StaggeredGridLayoutManager)
+                        recyclerView.getLayoutManager();
 
                 if (manager.getChildCount() <= 0) {
                     return;
@@ -156,7 +153,7 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
         }
 
         refreshing = true;
-        currentPage ++;
+        currentPage++;
         mSmsList.addAll(mPresenter.readSms(currentPage * pageCount, pageCount));
         mSmsFlowAdapter.notifyDataSetChanged();
         refreshing = false;
