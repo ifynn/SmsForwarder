@@ -34,9 +34,10 @@ public class FullBatteryMessenger extends BatteryNotify {
 
     @Override
     public void handle(int status, int percent) {
+        // 断开数据线
         if (status == BatteryManager.BATTERY_STATUS_NOT_CHARGING) {
             synchronized (this) {
-                sNotifyTimes++;
+                sNotifyTimes = 0;
             }
         }
 
