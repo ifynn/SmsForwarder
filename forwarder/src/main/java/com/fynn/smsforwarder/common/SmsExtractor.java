@@ -1,5 +1,7 @@
 package com.fynn.smsforwarder.common;
 
+import android.support.v4.util.ArraySet;
+import android.text.TextUtils;
 import android.util.Pair;
 
 import org.fynn.appu.util.CharsUtils;
@@ -41,8 +43,10 @@ public class SmsExtractor {
         }
 
         Matcher m = Patterns.p.matcher(msg);
-        int count = 0;
-        String code = null;
+
+        ArraySet<String> sixDigits = new ArraySet<>(1);
+        ArraySet<String> dgt$Letter = new ArraySet<>(1);
+        ArraySet<String> fourDigits = new ArraySet<>(1);
 
         while (m.find()) {
             String s = m.group();
@@ -51,16 +55,48 @@ public class SmsExtractor {
                 continue;
             }
 
-            count++;
-
-            if (count > 1) {
-                return null;
+            if (TextUtils.isDigitsOnly(s)) {
+                if (s.length() == 6) {
+                    sixDigits.add(s);
+                } else {
+                    fourDigits.add(s);
+                }
             } else {
-                code = s;
+                dgt$Letter.add(s);
             }
         }
 
+        String code = findCode(sixDigits, dgt$Letter, fourDigits);
+
+        if (CharsUtils.isEmpty(code)) {
+            return null;
+        }
+
         return Pair.create(matching, code);
+    }
+
+    private static String findCode(ArraySet<String>... codes) {
+        if (codes[0].size() == 1) {
+            return codes[0].valueAt(0);
+        }
+
+        if (codes[0].size() > 1) {
+            return null;
+        }
+
+        if (codes[1].size() == 1) {
+            return codes[1].valueAt(0);
+        }
+
+        if (codes[1].size() > 1) {
+            return null;
+        }
+
+        if (codes[2].size() == 1) {
+            return codes[2].valueAt(0);
+        }
+
+        return null;
     }
 
     static class Patterns {
