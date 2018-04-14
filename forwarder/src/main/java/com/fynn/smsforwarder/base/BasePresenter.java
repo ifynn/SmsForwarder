@@ -42,4 +42,8 @@ public class BasePresenter<V, M> implements Presenter<V, M> {
     public void referTo(M model) {
         mModel = model;
     }
+
+    public M getModel() {
+        return mModel;
+    }
 }

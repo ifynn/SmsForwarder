@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 
+import com.fynn.smsforwarder.business.SmsCache;
 import com.fynn.smsforwarder.common.SmsManager;
 import com.fynn.smsforwarder.model.bean.InboxSms;
 import com.fynn.smsforwarder.model.bean.Sms;
@@ -12,6 +13,7 @@ import com.fynn.smsforwarder.model.bean.Sms;
 import org.fynn.appu.AppU;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -19,8 +21,6 @@ import java.util.List;
  * @date 18/2/13
  */
 public final class Dbs {
-
-    // TODO: 18/2/13 LRU 缓存数据库短信
 
     /**
      * 获取收件箱中最新的一条短信
@@ -65,7 +65,7 @@ public final class Dbs {
      * @param sms
      * @return
      */
-    public static long insert(Sms sms) {
+    public static long insertSms(Sms sms) {
         if (sms == null) {
             return -1;
         }
@@ -81,7 +81,7 @@ public final class Dbs {
         }
     }
 
-    public static List readSms(Cursor cursor) {
+    public static List readSmsList(Cursor cursor) {
         ArrayList<Sms> smses = new ArrayList<Sms>();
 
         if (cursor == null) {
@@ -108,5 +108,40 @@ public final class Dbs {
         }
 
         return smses;
+    }
+
+    public static Sms readSms(Cursor cursor) {
+        List<Sms> smsList = readSmsList(cursor);
+
+        if (smsList.size() > 0) {
+            return smsList.get(0);
+        }
+
+        return null;
+    }
+
+    /**
+     * 分页查询数据库中短信
+     *
+     * @param offset
+     * @param limit
+     * @return
+     */
+    public static List<Sms> readSmsPage(int offset, int limit) {
+        Cursor c = SmsDbHelper.get().queryIdPage(offset, limit);
+
+        if (c == null) {
+            return Collections.emptyList();
+        }
+
+        List<Sms> smsList = new ArrayList<>(limit);
+
+        while (c.moveToNext()) {
+            int id = c.getInt(c.getColumnIndex(SmsDbHelper.ID));
+            Sms sms = SmsCache.get().getSms(id);
+            smsList.add(sms);
+        }
+
+        return smsList;
     }
 }

@@ -8,6 +8,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.util.Linkify;
+import android.util.Pair;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +17,8 @@ import android.widget.TextView;
 
 import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.base.BaseFragment;
-import com.fynn.smsforwarder.business.SmsFlowPresenter;
-import com.fynn.smsforwarder.common.SmsExtractor;
-import com.fynn.smsforwarder.common.db.Dbs;
-import com.fynn.smsforwarder.common.db.SmsDbHelper;
+import com.fynn.smsforwarder.business.AuthCodeCache;
+import com.fynn.smsforwarder.business.presenter.DefaultPresenter;
 import com.fynn.smsforwarder.model.SmsStorageModel;
 import com.fynn.smsforwarder.model.bean.Sms;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
@@ -36,7 +35,7 @@ import java.util.List;
 /**
  * @author fynn
  */
-public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageModel, SmsFlowPresenter> {
+public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, DefaultPresenter> {
 
     private RecyclerView mSmsFlowRecycler;
 
@@ -44,16 +43,19 @@ public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageMod
     private SmsFlowAdapter mSmsFlowAdapter;
 
     private long totalCount;
-    private long lastTotalCount;
     private int pageCount = 10;
     private int currentPage = 0;
+
+    private ViewInteraction interaction;
+    private boolean refreshing;
 
     public SmsFlowFragment() {
         // Required empty public constructor
     }
 
-    public static SmsFlowFragment newInstance() {
+    public static SmsFlowFragment newInstance(ViewInteraction interaction) {
         SmsFlowFragment fragment = new SmsFlowFragment();
+        fragment.interaction = interaction;
         return fragment;
     }
 
@@ -69,10 +71,12 @@ public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageMod
 
     @Override
     protected void initActions(Bundle savedInstanceState) {
-        totalCount = lastTotalCount = SmsDbHelper.get().getCount();
+        totalCount = mPresenter.getDbRecordCount();
 
-        mSmsFlowRecycler.setLayoutManager(new StaggeredGridLayoutManager(
-                2, StaggeredGridLayoutManager.VERTICAL));
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(
+                2, StaggeredGridLayoutManager.VERTICAL);
+
+        mSmsFlowRecycler.setLayoutManager(layoutManager);
         mSmsFlowRecycler.addItemDecoration(
                 ItemDivider.newInstance(0xffcccccc, DensityUtils.dip2px(6)));
 
@@ -83,11 +87,14 @@ public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageMod
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
+
                 if (newState != RecyclerView.SCROLL_STATE_IDLE) {
                     return;
                 }
 
-                StaggeredGridLayoutManager manager = (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
+                recyclerView.invalidateItemDecorations();
+                StaggeredGridLayoutManager manager = (StaggeredGridLayoutManager)
+                        recyclerView.getLayoutManager();
 
                 if (manager.getChildCount() <= 0) {
                     return;
@@ -118,39 +125,48 @@ public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageMod
             return;
         }
 
-        lastTotalCount = SmsDbHelper.get().getCount();
-
-        if (totalCount != lastTotalCount) {
-            totalCount = lastTotalCount;
+        if (totalCount != mPresenter.getDbRecordCount()) {
+            totalCount = mPresenter.getDbRecordCount();
             refresh();
         }
     }
 
     private void refresh() {
+        if (refreshing) {
+            return;
+        }
+        refreshing = true;
         mSmsList.clear();
         currentPage = 0;
-        mSmsList.addAll(Dbs.readSms(SmsDbHelper.get().queryPage(currentPage * pageCount, pageCount)));
+        mSmsList.addAll(mPresenter.readSms(currentPage * pageCount, pageCount));
         mSmsFlowAdapter.notifyDataSetChanged();
+        refreshing = false;
     }
 
     private void fetchNextPage() {
+        if (refreshing) {
+            return;
+        }
+
         if (mSmsList.size() >= totalCount) {
             return;
         }
 
-        currentPage ++;
-        mSmsList.addAll(Dbs.readSms(SmsDbHelper.get().queryPage(currentPage * pageCount, pageCount)));
+        refreshing = true;
+        currentPage++;
+        mSmsList.addAll(mPresenter.readSms(currentPage * pageCount, pageCount));
         mSmsFlowAdapter.notifyDataSetChanged();
+        refreshing = false;
     }
 
     @Override
-    protected SmsFlowPresenter createPresenter() {
-        return new SmsFlowPresenter();
+    protected DefaultPresenter createPresenter() {
+        return new DefaultPresenter();
     }
 
     @Override
     protected SmsStorageModel createModel() {
-        return new SmsStorageModel();
+        return interaction.getModel();
     }
 
     static class ItemDivider extends RecyclerView.ItemDecoration {
@@ -214,8 +230,9 @@ public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageMod
         public void onBindViewHolder(final SmsViewHolder holder, int position) {
             final Sms s = mSmsList.get(position);
 
-            String code = SmsExtractor.extractCaptcha(s.msg);
-            boolean hasCode = !CharsUtils.isEmptyAfterTrimming(code);
+            Pair<String, String> p = AuthCodeCache.get().fetchCode(s);
+            boolean hasCode = !CharsUtils.isEmptyAfterTrimming(p.first) &&
+                    !CharsUtils.isEmptyAfterTrimming(p.second);
 
             if (!hasCode) {
                 holder.mWatchDetails.setVisibility(View.GONE);
@@ -237,7 +254,8 @@ public class SmsFlowFragment extends BaseFragment<SmsFlowFragment, SmsStorageMod
                     }
                 });
 
-                holder.mSmsCode.setText(code);
+                holder.mSmsCode.setText(p.second);
+                holder.mSmsCodeDesc.setText(p.first);
             }
 
             if (!hasCode) {

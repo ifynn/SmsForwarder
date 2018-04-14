@@ -9,7 +9,8 @@ import org.fynn.appu.util.LogU;
 /**
  * 必须通过动态注册才有效
  *
- * Created by fynn on 2018/2/19.
+ * @author fynn
+ * @date 2018/2/19
  */
 
 public class BatteryChangeReceiver extends BroadcastReceiver {

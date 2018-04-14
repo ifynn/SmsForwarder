@@ -7,20 +7,19 @@ import android.widget.TextView;
 
 import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.base.BaseFragment;
-import com.fynn.smsforwarder.base.BasePresenter;
-import com.fynn.smsforwarder.base.Model;
-import com.fynn.smsforwarder.common.db.SPs;
+import com.fynn.smsforwarder.business.presenter.DefaultPresenter;
+import com.fynn.smsforwarder.model.SmsStorageModel;
 import com.fynn.switcher.Switch;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 
-import org.fynn.appu.util.CharsUtils;
 import org.fynn.appu.util.ToastUtils;
 
 /**
  * @author fynn
  */
-public class NotificationFragment extends BaseFragment implements View.OnClickListener {
+public class NotificationFragment extends BaseFragment<BaseView, SmsStorageModel, DefaultPresenter>
+        implements View.OnClickListener, BaseView {
 
     private TextView tvServerHost;
     private TextView tvServerPort;
@@ -30,15 +29,16 @@ public class NotificationFragment extends BaseFragment implements View.OnClickLi
     private TextView tvToAddress;
     private Switch switchBatteryNotify;
 
-    private DataHandler handler;
+    private ViewInteraction interaction;
     private boolean hided;
 
     public NotificationFragment() {
         // Required empty public constructor
     }
 
-    public static NotificationFragment newInstance() {
+    public static NotificationFragment newInstance(ViewInteraction interaction) {
         NotificationFragment fragment = new NotificationFragment();
+        fragment.interaction = interaction;
         return fragment;
     }
 
@@ -56,13 +56,11 @@ public class NotificationFragment extends BaseFragment implements View.OnClickLi
         switchSSL = (Switch) findViewById(R.id.switch_ssl_enabled);
         tvToAddress = (TextView) findViewById(R.id.tv_to_address);
         switchBatteryNotify = (Switch) findViewById(R.id.switch_battery_notify);
-
-        handler = (DataHandler) createModel();
     }
 
     @Override
     protected void initActions(Bundle savedInstanceState) {
-        refresh();
+        mPresenter.updateNotificationView();
 
         tvServerHost.setOnClickListener(this);
         tvServerPort.setOnClickListener(this);
@@ -73,77 +71,90 @@ public class NotificationFragment extends BaseFragment implements View.OnClickLi
         switchSSL.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(Switch s, boolean isChecked) {
-                handler.save(R.id.switch_ssl_enabled, String.valueOf(isChecked));
+                mPresenter.save(R.id.switch_ssl_enabled, String.valueOf(isChecked));
             }
         });
 
         switchBatteryNotify.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(Switch s, boolean isChecked) {
-                handler.save(R.id.switch_battery_notify, String.valueOf(isChecked));
+                mPresenter.save(R.id.switch_battery_notify, String.valueOf(isChecked));
             }
         });
 
         tvPassword.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                if (CharsUtils.isEmptyAfterTrimming(handler.getPassword())) {
-                    return false;
-                }
+                hided = !hided;
 
                 if (hided) {
-                    //显示密码
-                    tvPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-                    hided = false;
-                } else {
-                    //隐藏密码
                     tvPassword.setInputType(InputType.TYPE_CLASS_TEXT |
                             InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                    hided = true;
+                } else {
+                    tvPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
                 }
+
                 return true;
             }
         });
     }
 
-    private void refresh() {
-        if (!CharsUtils.isEmptyAfterTrimming(handler.getSMTPAddress())) {
-            tvServerHost.setText(handler.getSMTPAddress());
-        }
-
-        if (!CharsUtils.isEmptyAfterTrimming(handler.getSMTPPort())) {
-            tvServerPort.setText(handler.getSMTPPort());
-        }
-
-        if (!CharsUtils.isEmptyAfterTrimming(handler.getUsername())) {
-            tvUsername.setText(handler.getUsername());
-        }
-
-        if (!CharsUtils.isEmptyAfterTrimming(handler.getPassword())) {
-            tvPassword.setText(handler.getPassword());
-            tvPassword.setInputType(InputType.TYPE_CLASS_TEXT |
-                    InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            hided = true;
-        } else {
-            tvPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-        }
-
-        if (!CharsUtils.isEmptyAfterTrimming(handler.getToAddress())) {
-            tvToAddress.setText(handler.getToAddress());
-        }
-
-        switchSSL.setChecked(handler.sslEnabled());
-        switchBatteryNotify.setChecked(handler.notifyBattery());
+    @Override
+    protected DefaultPresenter createPresenter() {
+        return new DefaultPresenter();
     }
 
     @Override
-    protected BasePresenter createPresenter() {
-        return null;
+    protected SmsStorageModel createModel() {
+        return interaction.getModel();
     }
 
-    @Override
-    protected Model createModel() {
-        return new DataHandler();
+    public void updateText(int vid, String text) {
+        switch (vid) {
+            case R.id.tv_password:
+                tvPassword.setText(text);
+                if (hided) {
+                    tvPassword.setInputType(InputType.TYPE_CLASS_TEXT |
+                            InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                } else {
+                    tvPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                }
+                break;
+
+            case R.id.tv_smpt_address:
+                tvServerHost.setText(text);
+                break;
+
+            case R.id.tv_smpt_port:
+                tvServerPort.setText(text);
+                break;
+
+            case R.id.tv_username:
+                tvUsername.setText(text);
+                break;
+
+            case R.id.tv_to_address:
+                tvToAddress.setText(text);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    public void updateChecked(int vid, boolean checked) {
+        switch (vid) {
+            case R.id.switch_battery_notify:
+                switchBatteryNotify.setChecked(checked);
+                break;
+
+            case R.id.switch_ssl_enabled:
+                switchSSL.setChecked(checked);
+                break;
+
+            default:
+                break;
+        }
     }
 
     @Override
@@ -214,8 +225,13 @@ public class NotificationFragment extends BaseFragment implements View.OnClickLi
                         CharSequence text = builder.getEditText().getText();
                         if (text != null && text.length() > 0) {
                             dialog.dismiss();
-                            handler.save(id, text.toString());
-                            initActions(null);
+                            if (id == R.id.tv_password) {
+                                hided = false;
+                            }
+
+                            mPresenter.save(id, text.toString());
+                            mPresenter.updateNotificationView();
+
                         } else {
                             ToastUtils.showShortToast("请输入" + finalTips);
                         }
@@ -224,69 +240,12 @@ public class NotificationFragment extends BaseFragment implements View.OnClickLi
                 .show();
     }
 
-    class DataHandler implements Model {
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
 
-        public String getSMTPAddress() {
-            return SPs.getServerHost();
-        }
-
-        public String getSMTPPort() {
-            return SPs.getServerPort();
-        }
-
-        public String getToAddress() {
-            return SPs.getEmail();
-        }
-
-        public String getPassword() {
-            return SPs.getPassword();
-        }
-
-        public String getUsername() {
-            return SPs.getUsername();
-        }
-
-        public boolean sslEnabled() {
-            return SPs.isEnabledSSL();
-        }
-
-        public boolean notifyBattery() {
-            return SPs.isBatteryNotify();
-        }
-
-        public void save(int id, String text) {
-            switch (id) {
-                case R.id.tv_smpt_address:
-                    SPs.saveServerHost(text);
-                    break;
-
-                case R.id.tv_smpt_port:
-                    SPs.saveServerPort(text);
-                    break;
-
-                case R.id.tv_username:
-                    SPs.saveUsername(text);
-                    break;
-
-                case R.id.tv_password:
-                    SPs.savePassword(text);
-                    break;
-
-                case R.id.tv_to_address:
-                    SPs.saveEmail(text);
-                    break;
-
-                case R.id.switch_ssl_enabled:
-                    SPs.saveSSL(Boolean.valueOf(text));
-                    break;
-
-                case R.id.switch_battery_notify:
-                    SPs.saveBatteryNotify(Boolean.valueOf(text));
-                    break;
-
-                default:
-                    break;
-            }
+        if (!isVisibleToUser) {
+            hided = true;
         }
     }
 }

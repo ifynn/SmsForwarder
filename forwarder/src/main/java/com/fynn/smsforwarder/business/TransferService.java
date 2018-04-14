@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.util.Pair;
 
 import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.common.SmsManager;
@@ -24,7 +25,6 @@ import com.fynn.smsforwarder.view.MainActivity;
 
 import org.fynn.appu.util.CharsUtils;
 import org.fynn.appu.util.DateHelper;
-import org.fynn.appu.util.ToastUtils;
 
 import java.util.Date;
 
@@ -33,8 +33,6 @@ import java.util.Date;
  * @date 18/2/13
  */
 public class TransferService extends Service {
-
-    public static long mLastBatteryNotify = 0;
 
     private ContentObserver observer;
 
@@ -53,13 +51,14 @@ public class TransferService extends Service {
                 return;
             }
 
-            String code = AuthCodeCache.get().fetchCode(s);
+            Pair<String, String> code = AuthCodeCache.get().fetchCode(s);
             String senderName = SmsManager.fetchSmsSender(s.msg);
 
             String subject;
 
-            if (!CharsUtils.isEmptyAfterTrimming(code)) {
-                subject = code + " (验证码)【" + senderName + "】";
+            if (code != null && !CharsUtils.isEmptyAfterTrimming(code.first) &&
+                    !CharsUtils.isEmptyAfterTrimming(code.second)) {
+                subject = code.second + " (" + code.first + ")【" + senderName + "】";
             } else {
                 subject = s.msg + "【" + s.address + "】";
             }
@@ -76,11 +75,10 @@ public class TransferService extends Service {
 
             try {
                 EmailTransfer.send(email);
-                Dbs.insert(s);
+                Dbs.insertSms(s);
 
             } catch (Exception e) {
                 e.printStackTrace();
-                ToastUtils.showLongToast(e.toString());
             }
         }
     };
@@ -122,7 +120,7 @@ public class TransferService extends Service {
         Bitmap icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher, options);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, null);
-        builder.setSmallIcon(R.mipmap.ic_launcher);
+        builder.setSmallIcon(R.mipmap.ic_launcher_round);
         builder.setLargeIcon(icon);
         builder.setWhen(System.currentTimeMillis());
         builder.setTicker(getText(R.string.notice_status_bar_ticker));
