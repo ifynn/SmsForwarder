@@ -1,16 +1,14 @@
 package com.fynn.smsforwarder.common.db;
 
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.net.Uri;
+import android.os.Build;
 
+import com.fynn.smsforwarder.business.QihooSmsFetcher;
 import com.fynn.smsforwarder.business.SmsCache;
-import com.fynn.smsforwarder.common.SmsManager;
+import com.fynn.smsforwarder.business.SmsFetcher;
 import com.fynn.smsforwarder.model.bean.InboxSms;
 import com.fynn.smsforwarder.model.bean.Sms;
-
-import org.fynn.appu.AppU;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,41 +20,29 @@ import java.util.List;
  */
 public final class Dbs {
 
+    private static final SmsFetcher FETCHER;
+
+    static {
+        // TODO: 2018/6/1 changing
+        if (Build.BRAND.equals("qihoo")) {
+            FETCHER = new QihooSmsFetcher();
+        } else {
+            FETCHER = new SmsFetcher() {
+                @Override
+                public InboxSms fetchRecentOneInboxSms() {
+                    return null;
+                }
+            };
+        }
+    }
+
     /**
      * 获取收件箱中最新的一条短信
      *
      * @return
      */
     public static synchronized InboxSms fetchRecentOneInboxSms() {
-        ContentResolver resolver = AppU.app().getContentResolver();
-        Cursor cursor = resolver.query(Uri.parse(SmsManager.CONTENT_SMS_INBOX),
-                null, null, null, "_id desc");
-
-        if (cursor == null) {
-            return null;
-        }
-
-        if (cursor.getCount() <= 0 || !cursor.moveToFirst()) {
-            return null;
-        }
-
-        String address = cursor.getString(cursor.getColumnIndex("address"));
-        String body = cursor.getString(cursor.getColumnIndex("body"));
-        long date = cursor.getLong(cursor.getColumnIndex("date"));
-        int id = cursor.getInt(cursor.getColumnIndex("_id"));
-        int read = cursor.getInt(cursor.getColumnIndex("read"));
-        int type = cursor.getInt(cursor.getColumnIndex("type"));
-
-        InboxSms sms = new InboxSms();
-        sms.address = address;
-        sms.date = date;
-        sms.id = id;
-        sms.msg = body;
-        sms.read = read == 1 ? true : false;
-        sms.type = type;
-
-        cursor.close();
-        return sms;
+        return FETCHER.fetchRecentOneInboxSms();
     }
 
     /**
@@ -75,6 +61,7 @@ public final class Dbs {
         values.put(SmsDbHelper.ADDRESS, sms.address);
         values.put(SmsDbHelper.BODY, sms.msg);
         values.put(SmsDbHelper.DATE, sms.date);
+        values.put(SmsDbHelper.RECEIVER, sms.receiver);
 
         synchronized (Dbs.class) {
             return SmsDbHelper.get().insert(values);

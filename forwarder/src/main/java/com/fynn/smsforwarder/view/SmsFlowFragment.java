@@ -19,8 +19,10 @@ import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.base.BaseFragment;
 import com.fynn.smsforwarder.business.AuthCodeCache;
 import com.fynn.smsforwarder.business.presenter.DefaultPresenter;
+import com.fynn.smsforwarder.common.SmsReceiverManager;
 import com.fynn.smsforwarder.model.SmsStorageModel;
 import com.fynn.smsforwarder.model.bean.Sms;
+import com.fynn.smsforwarder.model.bean.SmsReceiver;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 
@@ -229,6 +231,14 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
         @Override
         public void onBindViewHolder(final SmsViewHolder holder, int position) {
             final Sms s = mSmsList.get(position);
+            final StringBuilder msg = new StringBuilder(s.msg);
+
+            SmsReceiver receiver = SmsReceiverManager.getSmsReceiver(s);
+
+            if (receiver != null && receiver.cardSlot >= 0) {
+                int slot = receiver.cardSlot;
+                msg.append("【").append("卡").append(slot + 1).append("】");
+            }
 
             Pair<String, String> p = AuthCodeCache.get().fetchCode(s);
             boolean hasCode = !CharsUtils.isEmptyAfterTrimming(p.first) &&
@@ -250,7 +260,7 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
                 holder.mWatchDetails.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        showMessageDialog(s.address, s.msg);
+                        showMessageDialog(s.address, msg);
                     }
                 });
 
@@ -259,7 +269,7 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
             }
 
             if (!hasCode) {
-                holder.mMsg.setText(s.msg);
+                holder.mMsg.setText(msg);
             }
 
             holder.mFrom.setText(s.address);
@@ -271,7 +281,7 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
             return mSmsList.size();
         }
 
-        private void showMessageDialog(String from, String text) {
+        private void showMessageDialog(String from, StringBuilder text) {
             QMUIDialog.MessageDialogBuilder builder = new QMUIDialog.MessageDialogBuilder(getActivity())
                     .setTitle(from)
                     .setMessage(text)

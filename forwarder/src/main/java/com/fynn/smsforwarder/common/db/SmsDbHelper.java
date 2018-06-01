@@ -22,9 +22,10 @@ public class SmsDbHelper extends SQLiteOpenHelper {
     public static final String BODY = "body";
     public static final String DATE = "date";
     public static final String ID = "_id";
+    public static final String RECEIVER = "receiver";
     private static final String SQL_CREATE_TABLE = "create table " + TABLE_NAME +
             "(" + ID + " number primary key," + ADDRESS + " text," +
-            BODY + " text," + DATE + " text)";
+            BODY + " text," + DATE + " text," + RECEIVER + " text)";
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
     private static int VERSION = AppU.app().getResources().getInteger(R.integer.db_sms_version);
@@ -52,8 +53,14 @@ public class SmsDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(SQL_DELETE_ENTRIES);
-        onCreate(db);
+        /**
+         * db.execSQL(SQL_DELETE_ENTRIES);
+         * onCreate(db);
+         */
+
+        if(newVersion > oldVersion) {
+            db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD "+ RECEIVER + " varchar(50);");
+        }
     }
 
     /**
