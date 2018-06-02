@@ -48,7 +48,7 @@ public class QihooReceiverInquirer implements SmsReceiverInquirer<InboxSms> {
         slot = slot == 1 ? 0 : 1;
 
         cursor = resolver.query(Uri.parse(CONTENT_SIM_INFO),
-                new String[]{COLUMN_SIM_ID}, COLUMN_SIM_ID + " = ?",
+                null, COLUMN_SIM_ID + " = ?",
                 new String[]{String.valueOf(slot)}, null);
 
         if (cursor == null) {

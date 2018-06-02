@@ -23,8 +23,7 @@ public final class Dbs {
     private static final SmsFetcher FETCHER;
 
     static {
-        // TODO: 2018/6/1 changing
-        if (Build.BRAND.equals("qihoo")) {
+        if (Build.BRAND.equals("360")) {
             FETCHER = new QihooSmsFetcher();
         } else {
             FETCHER = new SmsFetcher() {
@@ -51,7 +50,7 @@ public final class Dbs {
      * @param sms
      * @return
      */
-    public static long insertSms(Sms sms) {
+    public static long insertSms(InboxSms sms) {
         if (sms == null) {
             return -1;
         }
@@ -62,6 +61,7 @@ public final class Dbs {
         values.put(SmsDbHelper.BODY, sms.msg);
         values.put(SmsDbHelper.DATE, sms.date);
         values.put(SmsDbHelper.RECEIVER, sms.receiver);
+        values.put(SmsDbHelper.ITEM_INFO_ID, sms.itemInfoId);
 
         synchronized (Dbs.class) {
             return SmsDbHelper.get().insert(values);
@@ -69,7 +69,7 @@ public final class Dbs {
     }
 
     public static List readSmsList(Cursor cursor) {
-        ArrayList<Sms> smses = new ArrayList<Sms>();
+        ArrayList<InboxSms> smses = new ArrayList<InboxSms>();
 
         if (cursor == null) {
             return smses;
@@ -80,12 +80,16 @@ public final class Dbs {
             String from = cursor.getString(cursor.getColumnIndex(SmsDbHelper.ADDRESS));
             String content = cursor.getString(cursor.getColumnIndex(SmsDbHelper.BODY));
             long date = cursor.getLong(cursor.getColumnIndex(SmsDbHelper.DATE));
+            String number = cursor.getString(cursor.getColumnIndex(SmsDbHelper.RECEIVER));
+            long itemInfoId = cursor.getLong(cursor.getColumnIndex(SmsDbHelper.ITEM_INFO_ID));
 
-            Sms sms = new Sms();
+            InboxSms sms = new InboxSms();
             sms.address = from;
             sms.date = date;
             sms.id = id;
             sms.msg = content;
+            sms.receiver = number;
+            sms.itemInfoId = itemInfoId;
 
             smses.add(sms);
         }
@@ -97,8 +101,8 @@ public final class Dbs {
         return smses;
     }
 
-    public static Sms readSms(Cursor cursor) {
-        List<Sms> smsList = readSmsList(cursor);
+    public static InboxSms readSms(Cursor cursor) {
+        List<InboxSms> smsList = readSmsList(cursor);
 
         if (smsList.size() > 0) {
             return smsList.get(0);

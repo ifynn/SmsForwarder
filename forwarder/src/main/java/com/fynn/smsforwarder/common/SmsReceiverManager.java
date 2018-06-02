@@ -16,8 +16,7 @@ public final class SmsReceiverManager {
     private final static SmsReceiverInquirer IMPL;
 
     static {
-        // TODO: 2018/6/1 changing
-        if (Build.BRAND.equals("qihoo")) {
+        if (Build.BRAND.equals("360")) {
             IMPL = new QihooReceiverInquirer();
         } else {
             IMPL = new ExtraInquirer();

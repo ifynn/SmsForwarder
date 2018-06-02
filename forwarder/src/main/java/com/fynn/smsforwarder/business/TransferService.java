@@ -75,7 +75,7 @@ public class TransferService extends Service {
             String content = "发件人：" + s.address + "<br>" +
                     "发送时间：" + DateHelper.formatDate(new Date(s.date)) + "<br>" +
                     "短信内容：" + s.msg + "<br>" +
-                    "收件人：" + receiver == null? "" : receiver.number;
+                    "收件人：" + (receiver == null ? "" : receiver.number);
 
             Email email = EmailTransfer.genEmailData(subject, content, s.address);
 

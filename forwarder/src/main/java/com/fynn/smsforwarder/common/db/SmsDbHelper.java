@@ -23,9 +23,12 @@ public class SmsDbHelper extends SQLiteOpenHelper {
     public static final String DATE = "date";
     public static final String ID = "_id";
     public static final String RECEIVER = "receiver";
+    public static final String ITEM_INFO_ID = "item_info_id";
+
     private static final String SQL_CREATE_TABLE = "create table " + TABLE_NAME +
             "(" + ID + " number primary key," + ADDRESS + " text," +
-            BODY + " text," + DATE + " text," + RECEIVER + " text)";
+            BODY + " text," + DATE + " text," + RECEIVER + " text," +
+            ITEM_INFO_ID + " number)";
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
     private static int VERSION = AppU.app().getResources().getInteger(R.integer.db_sms_version);
@@ -53,13 +56,11 @@ public class SmsDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        /**
-         * db.execSQL(SQL_DELETE_ENTRIES);
-         * onCreate(db);
-         */
+//        db.execSQL(SQL_DELETE_ENTRIES);
+//        onCreate(db);
 
         if(newVersion > oldVersion) {
-            db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD "+ RECEIVER + " varchar(50);");
+            db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD "+ ITEM_INFO_ID + " number;");
         }
     }
 
@@ -106,7 +107,7 @@ public class SmsDbHelper extends SQLiteOpenHelper {
         db.beginTransaction();
 
         try {
-            c = db.query(TABLE_NAME, new String[]{ID, ADDRESS, BODY, DATE},
+            c = db.query(TABLE_NAME, new String[]{ID, ADDRESS, BODY, DATE, RECEIVER, ITEM_INFO_ID},
                     null, null, null, null, ID + " desc");
             db.setTransactionSuccessful();
         } catch (Exception e) {
@@ -134,7 +135,7 @@ public class SmsDbHelper extends SQLiteOpenHelper {
         db.beginTransaction();
 
         try {
-            cursor = db.query(TABLE_NAME, new String[]{ID, ADDRESS, BODY, DATE},
+            cursor = db.query(TABLE_NAME, new String[]{ID, ADDRESS, BODY, DATE, RECEIVER, ITEM_INFO_ID},
                     ID + " = ?", new String[]{String.valueOf(id)}, null, null, null);
             db.setTransactionSuccessful();
         } catch (Exception e) {
@@ -150,7 +151,7 @@ public class SmsDbHelper extends SQLiteOpenHelper {
      * 分页查询
      *
      * @param offset 偏移位置
-     * @param limit 每页数量
+     * @param limit  每页数量
      * @return
      */
     public Cursor queryPage(int offset, int limit) {
@@ -164,7 +165,7 @@ public class SmsDbHelper extends SQLiteOpenHelper {
         db.beginTransaction();
 
         try {
-            c = db.query(TABLE_NAME, new String[]{ID, ADDRESS, BODY, DATE},
+            c = db.query(TABLE_NAME, new String[]{ID, ADDRESS, BODY, DATE, RECEIVER, ITEM_INFO_ID},
                     null, null, null, null, ID + " desc", offset + "," + limit);
             db.setTransactionSuccessful();
         } catch (Exception e) {
@@ -180,7 +181,7 @@ public class SmsDbHelper extends SQLiteOpenHelper {
      * 分页查询
      *
      * @param offset 偏移位置
-     * @param limit 每页数量
+     * @param limit  每页数量
      * @return 返回 id
      */
     public Cursor queryIdPage(int offset, int limit) {
