@@ -1,10 +1,12 @@
-package com.fynn.smsforwarder.business;
+package com.fynn.smsforwarder.business.sms;
 
 import com.fynn.smsforwarder.common.db.Dbs;
 import com.fynn.smsforwarder.common.db.SmsDbHelper;
 import com.fynn.smsforwarder.model.bean.InboxSms;
 
 import org.fynn.appu.cache.LruCache;
+
+import java.util.List;
 
 /**
  * @author lifs
@@ -43,12 +45,14 @@ public class SmsCache {
             return s;
         }
 
-        s = Dbs.readSms(SmsDbHelper.get().query(id));
+        List<InboxSms> smses = Dbs.readSms(SmsDbHelper.get().query(id));
 
-        if (s != null) {
-            synchronized (LOCK) {
-                cache.put(id, s);
-            }
+        if (smses != null && smses.size() > 0) {
+            s = smses.get(0);
+        }
+
+        synchronized (LOCK) {
+            cache.put(id, s);
         }
 
         return s;

@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.base.BaseFragment;
-import com.fynn.smsforwarder.business.presenter.DefaultPresenter;
+import com.fynn.smsforwarder.business.DefaultPresenter;
 import com.fynn.smsforwarder.model.SmsStorageModel;
 import com.fynn.switcher.Switch;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
@@ -39,6 +39,7 @@ public class NotificationFragment extends BaseFragment<BaseView, SmsStorageModel
     public static NotificationFragment newInstance(ViewInteraction interaction) {
         NotificationFragment fragment = new NotificationFragment();
         fragment.interaction = interaction;
+        fragment.setRetainInstance(true);
         return fragment;
     }
 

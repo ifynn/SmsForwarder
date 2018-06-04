@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.base.BaseActivityCapacity;
-import com.fynn.smsforwarder.business.presenter.DefaultPresenter;
+import com.fynn.smsforwarder.business.DefaultPresenter;
 import com.fynn.smsforwarder.model.SmsStorageModel;
 
 /**

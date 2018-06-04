@@ -1,4 +1,4 @@
-package com.fynn.smsforwarder.business;
+package com.fynn.smsforwarder.business.sms;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -16,6 +16,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Pair;
 
 import com.fynn.smsforwarder.R;
+import com.fynn.smsforwarder.business.battery.BatteryChangeReceiver;
 import com.fynn.smsforwarder.common.SmsManager;
 import com.fynn.smsforwarder.common.SmsReceiverManager;
 import com.fynn.smsforwarder.common.ThreadPool;

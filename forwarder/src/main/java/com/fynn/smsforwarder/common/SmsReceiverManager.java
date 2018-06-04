@@ -2,8 +2,8 @@ package com.fynn.smsforwarder.common;
 
 import android.os.Build;
 
-import com.fynn.smsforwarder.business.QihooReceiverInquirer;
-import com.fynn.smsforwarder.business.SmsReceiverInquirer;
+import com.fynn.smsforwarder.business.sms.QihooReceiverInquirer;
+import com.fynn.smsforwarder.business.sms.SmsReceiverInquirer;
 import com.fynn.smsforwarder.model.bean.Sms;
 import com.fynn.smsforwarder.model.bean.SmsReceiver;
 

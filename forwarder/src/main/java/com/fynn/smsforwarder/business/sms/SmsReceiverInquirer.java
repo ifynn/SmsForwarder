@@ -1,4 +1,4 @@
-package com.fynn.smsforwarder.business;
+package com.fynn.smsforwarder.business.sms;
 
 import com.fynn.smsforwarder.model.bean.Sms;
 import com.fynn.smsforwarder.model.bean.SmsReceiver;

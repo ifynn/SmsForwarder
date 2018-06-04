@@ -7,7 +7,7 @@ import android.os.Bundle;
 
 import com.fynn.smsforwarder.base.ActivityCapacity;
 import com.fynn.smsforwarder.base.BaseActivity;
-import com.fynn.smsforwarder.business.TransferService;
+import com.fynn.smsforwarder.business.sms.TransferService;
 
 public class MainActivity extends BaseActivity {
 

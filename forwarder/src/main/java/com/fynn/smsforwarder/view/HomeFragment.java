@@ -5,7 +5,7 @@ import android.widget.TextView;
 
 import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.base.BaseFragment;
-import com.fynn.smsforwarder.business.presenter.DefaultPresenter;
+import com.fynn.smsforwarder.business.DefaultPresenter;
 import com.fynn.smsforwarder.model.SmsStorageModel;
 
 /**
@@ -25,6 +25,7 @@ public class HomeFragment extends BaseFragment<BaseView, SmsStorageModel, Defaul
     public static HomeFragment newInstance(ViewInteraction interaction) {
         HomeFragment fragment = new HomeFragment();
         fragment.interaction = interaction;
+        fragment.setRetainInstance(true);
         return fragment;
     }
 

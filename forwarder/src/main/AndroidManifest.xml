@@ -40,7 +40,7 @@
         </activity>
 
         <!-- A broadcast receiver for sms transfer -->
-        <receiver android:name=".business.TransferReceiver">
+        <receiver android:name=".business.sms.TransferReceiver">
             <intent-filter android:priority="2147483647">
                 <!-- 系统启动完成后会调用 -->
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
@@ -54,13 +54,13 @@
 
         <!-- remote service -->
         <service
-            android:name=".business.TransferService"
+            android:name=".business.sms.TransferService"
             android:enabled="true"
             android:process=":sender">
         </service>
 
         <service
-            android:name=".business.BatteryIntentService"
+            android:name=".business.battery.BatteryIntentService"
             android:enabled="true"/>
 
     </application>

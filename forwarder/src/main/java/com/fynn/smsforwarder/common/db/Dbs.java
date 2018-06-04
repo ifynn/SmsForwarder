@@ -1,21 +1,18 @@
 package com.fynn.smsforwarder.common.db;
 
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Build;
 
-import com.fynn.smsforwarder.business.QihooSmsFetcher;
-import com.fynn.smsforwarder.business.SmsCache;
-import com.fynn.smsforwarder.business.SmsFetcher;
+import com.fynn.smsforwarder.business.sms.QihooSmsFetcher;
+import com.fynn.smsforwarder.business.sms.SmsFetcher;
+import com.fynn.smsforwarder.business.sms.SmsFetcherFactory;
 import com.fynn.smsforwarder.model.bean.InboxSms;
-import com.fynn.smsforwarder.model.bean.Sms;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * @author lifs
+ * @author Fynn
  * @date 18/2/13
  */
 public final class Dbs {
@@ -23,16 +20,7 @@ public final class Dbs {
     private static final SmsFetcher FETCHER;
 
     static {
-        if (Build.BRAND.equals("360")) {
-            FETCHER = new QihooSmsFetcher();
-        } else {
-            FETCHER = new SmsFetcher() {
-                @Override
-                public InboxSms fetchRecentOneInboxSms() {
-                    return null;
-                }
-            };
-        }
+        FETCHER = new Factory().create();
     }
 
     /**
@@ -51,64 +39,11 @@ public final class Dbs {
      * @return
      */
     public static long insertSms(InboxSms sms) {
-        if (sms == null) {
-            return -1;
-        }
-
-        ContentValues values = new ContentValues();
-        values.put(SmsDbHelper.ID, sms.id);
-        values.put(SmsDbHelper.ADDRESS, sms.address);
-        values.put(SmsDbHelper.BODY, sms.msg);
-        values.put(SmsDbHelper.DATE, sms.date);
-        values.put(SmsDbHelper.RECEIVER, sms.receiver);
-        values.put(SmsDbHelper.ITEM_INFO_ID, sms.itemInfoId);
-
-        synchronized (Dbs.class) {
-            return SmsDbHelper.get().insert(values);
-        }
+        return FETCHER.insertSms(sms);
     }
 
-    public static List readSmsList(Cursor cursor) {
-        ArrayList<InboxSms> smses = new ArrayList<InboxSms>();
-
-        if (cursor == null) {
-            return smses;
-        }
-
-        while (cursor.moveToNext()) {
-            int id = cursor.getInt(cursor.getColumnIndex(SmsDbHelper.ID));
-            String from = cursor.getString(cursor.getColumnIndex(SmsDbHelper.ADDRESS));
-            String content = cursor.getString(cursor.getColumnIndex(SmsDbHelper.BODY));
-            long date = cursor.getLong(cursor.getColumnIndex(SmsDbHelper.DATE));
-            String number = cursor.getString(cursor.getColumnIndex(SmsDbHelper.RECEIVER));
-            long itemInfoId = cursor.getLong(cursor.getColumnIndex(SmsDbHelper.ITEM_INFO_ID));
-
-            InboxSms sms = new InboxSms();
-            sms.address = from;
-            sms.date = date;
-            sms.id = id;
-            sms.msg = content;
-            sms.receiver = number;
-            sms.itemInfoId = itemInfoId;
-
-            smses.add(sms);
-        }
-
-        if (!cursor.isClosed()) {
-            cursor.close();
-        }
-
-        return smses;
-    }
-
-    public static InboxSms readSms(Cursor cursor) {
-        List<InboxSms> smsList = readSmsList(cursor);
-
-        if (smsList.size() > 0) {
-            return smsList.get(0);
-        }
-
-        return null;
+    public static List<InboxSms> readSms(Cursor cursor) {
+        return FETCHER.readSms(cursor);
     }
 
     /**
@@ -118,21 +53,42 @@ public final class Dbs {
      * @param limit
      * @return
      */
-    public static List<Sms> readSmsPage(int offset, int limit) {
-        Cursor c = SmsDbHelper.get().queryIdPage(offset, limit);
+    public static List<InboxSms> readSmsPage(int offset, int limit) {
+        return FETCHER.readSmsPage(offset, limit);
+    }
 
-        if (c == null) {
-            return Collections.emptyList();
+    static class Factory implements SmsFetcherFactory {
+
+        private static final String BRAND_QIHOO = "360";
+
+        @Override
+        public SmsFetcher create() {
+            if (Build.BRAND.equals(BRAND_QIHOO)) {
+                return new QihooSmsFetcher();
+            }
+
+            return new SmsFetcher() {
+
+                @Override
+                public InboxSms fetchRecentOneInboxSms() {
+                    return null;
+                }
+
+                @Override
+                public long insertSms(InboxSms sms) {
+                    return 0;
+                }
+
+                @Override
+                public List readSms(Cursor cursor) {
+                    return Collections.emptyList();
+                }
+
+                @Override
+                public List<InboxSms> readSmsPage(int offset, int limit) {
+                    return Collections.emptyList();
+                }
+            };
         }
-
-        List<Sms> smsList = new ArrayList<>(limit);
-
-        while (c.moveToNext()) {
-            int id = c.getInt(c.getColumnIndex(SmsDbHelper.ID));
-            Sms sms = SmsCache.get().getSms(id);
-            smsList.add(sms);
-        }
-
-        return smsList;
     }
 }

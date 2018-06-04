@@ -17,8 +17,8 @@ import android.widget.TextView;
 
 import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.base.BaseFragment;
-import com.fynn.smsforwarder.business.AuthCodeCache;
-import com.fynn.smsforwarder.business.presenter.DefaultPresenter;
+import com.fynn.smsforwarder.business.sms.AuthCodeCache;
+import com.fynn.smsforwarder.business.DefaultPresenter;
 import com.fynn.smsforwarder.common.SmsReceiverManager;
 import com.fynn.smsforwarder.model.SmsStorageModel;
 import com.fynn.smsforwarder.model.bean.InboxSms;
@@ -58,6 +58,7 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
     public static SmsFlowFragment newInstance(ViewInteraction interaction) {
         SmsFlowFragment fragment = new SmsFlowFragment();
         fragment.interaction = interaction;
+        fragment.setRetainInstance(true);
         return fragment;
     }
 
