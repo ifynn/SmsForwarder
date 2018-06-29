@@ -1,6 +1,11 @@
 package com.fynn.smsforwarder.common;
 
+import android.content.ContentResolver;
 import android.database.Cursor;
+import android.net.Uri;
+
+import org.fynn.appu.AppU;
+import org.fynn.appu.util.LogU;
 
 /**
  * @author lifs
@@ -38,5 +43,19 @@ public class Cursors {
 
         c.close();
         return builder;
+    }
+
+    public static void parseSms() {
+        ContentResolver resolver = AppU.app().getContentResolver();
+        Cursor cursor = resolver.query(Uri.parse(SmsManager.CONTENT_SMS_INBOX),
+                null, null, null, "_id desc");
+        LogU.e("sms", parseCursor(cursor));
+    }
+
+    public static void parseSimInfo() {
+        ContentResolver resolver = AppU.app().getContentResolver();
+        Cursor cursor = resolver.query(Uri.parse("content://telephony/siminfo"),
+                null, null, null, "_id desc");
+        LogU.e("smsinfo", parseCursor(cursor));
     }
 }
