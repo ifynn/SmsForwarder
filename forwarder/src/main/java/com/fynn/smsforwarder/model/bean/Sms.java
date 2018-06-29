@@ -26,13 +26,26 @@ public class Sms {
      */
     public long id;
 
+    /**
+     * 接收者
+     */
+    public String receiver;
+
+    /**
+     * 卡槽值
+     */
+    public int slot;
+
     @Override
     public String toString() {
-        return "Sms{" +
-                "address='" + address + '\'' +
-                ", msg='" + msg + '\'' +
-                ", date=" + date +
-                ", id=" + id +
-                '}';
+        final StringBuilder sb = new StringBuilder("Sms{");
+        sb.append("address='").append(address).append('\'');
+        sb.append(", msg='").append(msg).append('\'');
+        sb.append(", date=").append(date);
+        sb.append(", id=").append(id);
+        sb.append(", receiver='").append(receiver).append('\'');
+        sb.append(", slot=").append(slot);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -17,10 +17,12 @@ import android.widget.TextView;
 
 import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.base.BaseFragment;
-import com.fynn.smsforwarder.business.AuthCodeCache;
-import com.fynn.smsforwarder.business.presenter.DefaultPresenter;
+import com.fynn.smsforwarder.business.sms.AuthCodeCache;
+import com.fynn.smsforwarder.business.DefaultPresenter;
+import com.fynn.smsforwarder.common.SmsReceiverManager;
 import com.fynn.smsforwarder.model.SmsStorageModel;
-import com.fynn.smsforwarder.model.bean.Sms;
+import com.fynn.smsforwarder.model.bean.InboxSms;
+import com.fynn.smsforwarder.model.bean.SmsReceiver;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 
@@ -39,7 +41,7 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
 
     private RecyclerView mSmsFlowRecycler;
 
-    private List<Sms> mSmsList = new ArrayList<Sms>();
+    private List<InboxSms> mSmsList = new ArrayList<InboxSms>();
     private SmsFlowAdapter mSmsFlowAdapter;
 
     private long totalCount;
@@ -56,6 +58,7 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
     public static SmsFlowFragment newInstance(ViewInteraction interaction) {
         SmsFlowFragment fragment = new SmsFlowFragment();
         fragment.interaction = interaction;
+        fragment.setRetainInstance(true);
         return fragment;
     }
 
@@ -228,7 +231,8 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
 
         @Override
         public void onBindViewHolder(final SmsViewHolder holder, int position) {
-            final Sms s = mSmsList.get(position);
+            final InboxSms s = mSmsList.get(position);
+            SmsReceiver receiver = SmsReceiverManager.getSmsReceiver(s);
 
             Pair<String, String> p = AuthCodeCache.get().fetchCode(s);
             boolean hasCode = !CharsUtils.isEmptyAfterTrimming(p.first) &&
@@ -264,6 +268,7 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
 
             holder.mFrom.setText(s.address);
             holder.mDate.setText(DateHelper.formatDate(new Date(s.date), "yyyy/MM/dd HH:mm"));
+            holder.mSlot.setText(receiver == null ? "[未知]" : "[卡" + (receiver.cardSlot + 1) + "]");
         }
 
         @Override
@@ -304,6 +309,7 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
             TextView mMsg;
             TextView mDate;
             TextView mWatchDetails;
+            TextView mSlot;
 
             public SmsViewHolder(View itemView) {
                 super(itemView);
@@ -313,6 +319,7 @@ public class SmsFlowFragment extends BaseFragment<BaseView, SmsStorageModel, Def
                 mMsg = itemView.findViewById(R.id.tv_msg);
                 mDate = itemView.findViewById(R.id.tv_date);
                 mWatchDetails = itemView.findViewById(R.id.tv_watch_details);
+                mSlot = itemView.findViewById(R.id.tv_slot);
             }
         }
     }

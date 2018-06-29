@@ -1,4 +1,4 @@
-package com.fynn.smsforwarder.business;
+package com.fynn.smsforwarder.business.battery;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -29,6 +29,16 @@ public class BatteryIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+        boolean notification = SPs.isBatteryNotify();
+
+        if (!notification) {
+            return;
+        }
+
+        observable = new BatteryStatusObservable();
+        observable.addObserver(new LowBatteryMessenger());
+        observable.addObserver(new FullBatteryMessenger());
+
         int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS,
                 BatteryManager.BATTERY_STATUS_UNKNOWN);
 
@@ -40,23 +50,9 @@ public class BatteryIntentService extends IntentService {
         }
 
         int percent = (level * 100) / scale;
-
         Pair p = Pair.create(status, percent);
+
         observable.notifyObservers(p);
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        boolean notification = SPs.isBatteryNotify();
-
-        if (!notification) {
-            return;
-        }
-
-        observable = new BatteryStatusObservable();
-        observable.addObserver(new LowBatteryMessenger());
-        observable.addObserver(new FullBatteryMessenger());
     }
 
     @Override

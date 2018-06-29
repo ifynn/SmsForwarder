@@ -1,18 +1,17 @@
-package com.fynn.smsforwarder.business;
+package com.fynn.smsforwarder.business.battery;
 
 import android.os.BatteryManager;
 
+import com.fynn.smsforwarder.business.sms.EmailTransfer;
 import com.fynn.smsforwarder.model.bean.Email;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * 处理低电量提醒
- *
- * @author lifs
+ * @author fynn
  * @date 18/3/2
  */
-public class LowBatteryMessenger extends BatteryNotify {
+public class FullBatteryMessenger extends BatteryNotify {
 
     /**
      * 每个阶段提醒次数
@@ -20,12 +19,7 @@ public class LowBatteryMessenger extends BatteryNotify {
     private static final int TIMES_REMIND = 3;
 
     /**
-     * 低电量提醒
-     */
-    private static final int PERCENT_REMIND_LEVEL = 30;
-
-    /**
-     * 低电量提醒间隔时间
+     * 提醒间隔时间
      */
     private static final int MINUTES_REMIND_GAP = 30;
 
@@ -41,25 +35,20 @@ public class LowBatteryMessenger extends BatteryNotify {
 
     @Override
     public void handle(int status, int percent) {
-        switch (status) {
-            // 断开数据线
-            case BatteryManager.BATTERY_STATUS_NOT_CHARGING:
-                synchronized (this) {
-                    sNotifyTimes = 0;
-                }
-                break;
-
-            default:
-                break;
+        // 断开数据线
+        if (status == BatteryManager.BATTERY_STATUS_NOT_CHARGING) {
+            synchronized (this) {
+                sNotifyTimes = 0;
+            }
         }
 
-        boolean notification = notificationEnabled(status, percent);
+        boolean notice = isNotice(status, percent);
 
-        if (!notification) {
+        if (!notice) {
             return;
         }
 
-        String msg = "电量过低 (" + percent + "%)，请充电!";
+        String msg = "已充满电!";
         Email email = EmailTransfer.genEmailData(msg, msg, "短信转移");
 
         if (email == null) {
@@ -79,7 +68,7 @@ public class LowBatteryMessenger extends BatteryNotify {
         }
     }
 
-    private boolean notificationEnabled(int status, int percent) {
+    private boolean isNotice(int status, int percent) {
         long now = System.currentTimeMillis();
         long minutes = TimeUnit.MILLISECONDS.toMinutes(now - sLastNotifyMilliseconds);
 
@@ -91,11 +80,7 @@ public class LowBatteryMessenger extends BatteryNotify {
             return false;
         }
 
-        if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
-            return false;
-        }
-
-        if (percent >= PERCENT_REMIND_LEVEL) {
+        if (status != BatteryManager.BATTERY_STATUS_FULL) {
             return false;
         }
 

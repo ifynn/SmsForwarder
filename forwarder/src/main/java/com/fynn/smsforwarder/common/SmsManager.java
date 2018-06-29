@@ -63,7 +63,7 @@ public final class SmsManager {
             return null;
         }
 
-        int start = msg.indexOf(startChar);
+        int start = msg.lastIndexOf(startChar);
         int end = msg.lastIndexOf(endChar);
 
         if (start < 0 || end < 0) {

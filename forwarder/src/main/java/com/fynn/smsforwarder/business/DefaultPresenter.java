@@ -1,4 +1,4 @@
-package com.fynn.smsforwarder.business.presenter;
+package com.fynn.smsforwarder.business;
 
 import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.base.BasePresenter;
