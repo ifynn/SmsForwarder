@@ -35,9 +35,14 @@ public class LollipopSmsInquirer implements SmsReceiverInquirer<InboxSms> {
         }
 
         SmsReceiver r = new SmsReceiver();
-        r.cardSlot = (int) (id + 1);
-        r.number = cursor.getString(cursor.getColumnIndex(Sim.COLUMN_NUMBER));
-        r.operator = cursor.getString(cursor.getColumnIndex(Sim.COLUMN_DISPLAY_NAME));
+
+        try {
+            r.cardSlot = cursor.getInt(cursor.getColumnIndex(Sim.COLUMN_SIM_ID)) + 1;
+            r.number = cursor.getString(cursor.getColumnIndex(Sim.COLUMN_NUMBER));
+            r.operator = cursor.getString(cursor.getColumnIndex(Sim.COLUMN_DISPLAY_NAME));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return r;
     }
