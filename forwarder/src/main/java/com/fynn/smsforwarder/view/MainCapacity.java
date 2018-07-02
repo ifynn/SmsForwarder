@@ -14,7 +14,10 @@ import android.widget.TextView;
 import com.fynn.smsforwarder.R;
 import com.fynn.smsforwarder.base.BaseActivityCapacity;
 import com.fynn.smsforwarder.business.DefaultPresenter;
+import com.fynn.smsforwarder.common.Cursors;
 import com.fynn.smsforwarder.model.SmsStorageModel;
+
+import org.fynn.appu.AppU;
 
 /**
  * @author fynn
@@ -90,6 +93,11 @@ public class MainCapacity extends BaseActivityCapacity<BaseView, SmsStorageModel
         navigation.setItemIconTintList(csl);
 
         navigation.setSelectedItemId(R.id.navigation_home);
+
+        if (AppU.isDebug()) {
+            Cursors.parseSimInfo();
+            Cursors.parseSms();
+        }
     }
 
     @Override

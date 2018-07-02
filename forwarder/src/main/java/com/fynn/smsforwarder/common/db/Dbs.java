@@ -3,6 +3,7 @@ package com.fynn.smsforwarder.common.db;
 import android.database.Cursor;
 import android.os.Build;
 
+import com.fynn.smsforwarder.business.sms.LollipopSmsFetcher;
 import com.fynn.smsforwarder.business.sms.QihooSmsFetcher;
 import com.fynn.smsforwarder.business.sms.SmsFetcher;
 import com.fynn.smsforwarder.business.sms.SmsFetcherFactory;
@@ -65,6 +66,10 @@ public final class Dbs {
         public SmsFetcher create() {
             if (Build.BRAND.equals(BRAND_QIHOO)) {
                 return new QihooSmsFetcher();
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                return new LollipopSmsFetcher();
             }
 
             return new SmsFetcher() {
