@@ -16,6 +16,7 @@ public class MainActivity extends BaseActivity {
         Intent i = getIntent();
         if (i != null) {
             i.putExtra(ActivityCapacity.CAPACITY_NAME, MainCapacity.class.getName());
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
 
         super.onCreate(savedInstanceState);
