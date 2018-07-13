@@ -17,7 +17,7 @@ public final class SmsReceiverManager {
     private final static SmsReceiverInquirer IMPL;
 
     static {
-        if (Build.BRAND.equals("360")) {
+        if ("360".equals(Build.BRAND)) {
             IMPL = new QihooReceiverInquirer();
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             IMPL = new LollipopSmsInquirer();

@@ -17,14 +17,14 @@ public class SmsCache {
     public static final int CACHE_SIZE = 100;
     private static final Object LOCK = new Object();
 
-    private final static LruCache<Long, InboxSms> cache = new LruCache<Long, InboxSms>() {
+    private final static LruCache<Long, InboxSms> CACHE = new LruCache<Long, InboxSms>() {
         // no-op
     };
 
     private static SmsCache smsCache;
 
     private SmsCache() {
-        cache.setupCapacity(CACHE_SIZE);
+        CACHE.setupCapacity(CACHE_SIZE);
     }
 
     public static SmsCache get() {
@@ -39,7 +39,7 @@ public class SmsCache {
     }
 
     public InboxSms getSms(long id) {
-        InboxSms s = cache.get(id);
+        InboxSms s = CACHE.get(id);
 
         if (s != null) {
             return s;
@@ -52,7 +52,7 @@ public class SmsCache {
         }
 
         synchronized (LOCK) {
-            cache.put(id, s);
+            CACHE.put(id, s);
         }
 
         return s;

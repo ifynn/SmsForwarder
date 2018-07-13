@@ -42,7 +42,7 @@ public class SmsExtractor {
             return null;
         }
 
-        Matcher m = Patterns.p.matcher(msg);
+        Matcher m = Patterns.P.matcher(msg);
 
         ArraySet<String> sixDigits = new ArraySet<>(1);
         ArraySet<String> dgt$Letter = new ArraySet<>(1);
@@ -100,6 +100,6 @@ public class SmsExtractor {
     }
 
     static class Patterns {
-        public static final Pattern p = Pattern.compile(SMS_REGEX);
+        public static final Pattern P = Pattern.compile(SMS_REGEX);
     }
 }
