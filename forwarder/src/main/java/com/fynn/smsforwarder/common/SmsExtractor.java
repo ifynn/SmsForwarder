@@ -16,7 +16,7 @@ public class SmsExtractor {
 
     private static final String SMS_REGEX = "[\\da-zA-Z]{6}|[\\d]{4}";
 
-    private static final String[] CODES = {"验证码", "校验码", "随机码", "安全码"};
+    private static final String[] CODES = {"验证码", "校验码", "随机码", "安全码", "动态密码", "动态码"};
 
     /**
      * 解析短信中的验证码
