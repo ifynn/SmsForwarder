@@ -55,12 +55,14 @@ public class TransferService extends Service {
             }
 
             Pair<String, String> code = AuthCodeCache.get().fetchCode(s);
-            String senderName = SmsManager.fetchSmsSender(s.msg);
-
             String subject;
 
             if (code != null && !CharsUtils.isEmptyAfterTrimming(code.first) &&
                     !CharsUtils.isEmptyAfterTrimming(code.second)) {
+                String senderName = SmsManager.fetchSmsSender(s.msg);
+                if (CharsUtils.isEmptyAfterTrimming(senderName)) {
+                    senderName = s.address;
+                }
                 subject = code.second + " (" + code.first + ")【" + senderName + "】";
             } else {
                 subject = s.msg + "【" + s.address + "】";

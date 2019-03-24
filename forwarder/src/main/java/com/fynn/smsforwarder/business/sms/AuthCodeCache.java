@@ -14,14 +14,14 @@ import org.fynn.appu.cache.LruCache;
 public class AuthCodeCache {
 
     public static final int CACHE_SIZE = 100;
-    private final static LruCache<Long, Pair> cache = new LruCache<Long, Pair>() {
+    private final static LruCache<Long, Pair> CACHE = new LruCache<Long, Pair>() {
         // no-op
     };
     private static final Object LOCK = new Object();
     private static AuthCodeCache authCodeCache;
 
     private AuthCodeCache() {
-        cache.setupCapacity(CACHE_SIZE);
+        CACHE.setupCapacity(CACHE_SIZE);
     }
 
     public static AuthCodeCache get() {
@@ -40,7 +40,7 @@ public class AuthCodeCache {
             return null;
         }
 
-        Pair p = cache.get(sms.id);
+        Pair p = CACHE.get(sms.id);
 
         if (p != null) {
             return p;
@@ -53,7 +53,7 @@ public class AuthCodeCache {
         }
 
         synchronized (LOCK) {
-            cache.put(sms.id, code);
+            CACHE.put(sms.id, code);
         }
         return code;
     }

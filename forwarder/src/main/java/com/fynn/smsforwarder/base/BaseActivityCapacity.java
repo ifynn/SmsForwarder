@@ -66,7 +66,7 @@ public abstract class BaseActivityCapacity<V, M extends Model, P extends BasePre
 
     protected abstract M createModel();
 
-    public void startActivity(Class<ActivityCapacity> capacityClass) {
+    public void startActivity(Class<? extends ActivityCapacity> capacityClass) {
         Intent intent = new Intent(mActivity, BaseActivityImpl.class);
         intent.putExtra(ActivityCapacity.CAPACITY_NAME, capacityClass.getName());
         mActivity.startActivity(intent);

@@ -24,11 +24,12 @@ public class SmsDbHelper extends SQLiteOpenHelper {
     public static final String ID = "_id";
     public static final String RECEIVER = "receiver";
     public static final String ITEM_INFO_ID = "item_info_id";
+    public static final String SIM_ID = "sim_id";
 
     private static final String SQL_CREATE_TABLE = "create table " + TABLE_NAME +
             "(" + ID + " number primary key," + ADDRESS + " text," +
             BODY + " text," + DATE + " text," + RECEIVER + " text," +
-            ITEM_INFO_ID + " number)";
+            ITEM_INFO_ID + " number," + SIM_ID + " number" + ")";
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
     private static int VERSION = AppU.app().getResources().getInteger(R.integer.db_sms_version);
@@ -59,8 +60,16 @@ public class SmsDbHelper extends SQLiteOpenHelper {
 //        db.execSQL(SQL_DELETE_ENTRIES);
 //        onCreate(db);
 
-        if(newVersion > oldVersion) {
+        if (newVersion <= oldVersion) {
+            return;
+        }
+
+        if (oldVersion <= 3) {
             db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD "+ ITEM_INFO_ID + " number;");
+        }
+
+        if (oldVersion <= 4) {
+            db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD "+ SIM_ID + " number;");
         }
     }
 
@@ -107,7 +116,8 @@ public class SmsDbHelper extends SQLiteOpenHelper {
         db.beginTransaction();
 
         try {
-            c = db.query(TABLE_NAME, new String[]{ID, ADDRESS, BODY, DATE, RECEIVER, ITEM_INFO_ID},
+            c = db.query(TABLE_NAME,
+                    new String[]{ID, ADDRESS, BODY, DATE, RECEIVER, ITEM_INFO_ID, SIM_ID},
                     null, null, null, null, ID + " desc");
             db.setTransactionSuccessful();
         } catch (Exception e) {
@@ -135,7 +145,8 @@ public class SmsDbHelper extends SQLiteOpenHelper {
         db.beginTransaction();
 
         try {
-            cursor = db.query(TABLE_NAME, new String[]{ID, ADDRESS, BODY, DATE, RECEIVER, ITEM_INFO_ID},
+            cursor = db.query(TABLE_NAME,
+                    new String[]{ID, ADDRESS, BODY, DATE, RECEIVER, ITEM_INFO_ID, SIM_ID},
                     ID + " = ?", new String[]{String.valueOf(id)}, null, null, null);
             db.setTransactionSuccessful();
         } catch (Exception e) {
@@ -165,7 +176,8 @@ public class SmsDbHelper extends SQLiteOpenHelper {
         db.beginTransaction();
 
         try {
-            c = db.query(TABLE_NAME, new String[]{ID, ADDRESS, BODY, DATE, RECEIVER, ITEM_INFO_ID},
+            c = db.query(TABLE_NAME,
+                    new String[]{ID, ADDRESS, BODY, DATE, RECEIVER, ITEM_INFO_ID, SIM_ID},
                     null, null, null, null, ID + " desc", offset + "," + limit);
             db.setTransactionSuccessful();
         } catch (Exception e) {

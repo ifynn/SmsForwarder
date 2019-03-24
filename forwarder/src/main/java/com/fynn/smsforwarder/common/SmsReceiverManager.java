@@ -2,6 +2,7 @@ package com.fynn.smsforwarder.common;
 
 import android.os.Build;
 
+import com.fynn.smsforwarder.business.sms.LollipopSmsInquirer;
 import com.fynn.smsforwarder.business.sms.QihooReceiverInquirer;
 import com.fynn.smsforwarder.business.sms.SmsReceiverInquirer;
 import com.fynn.smsforwarder.model.bean.Sms;
@@ -16,12 +17,13 @@ public final class SmsReceiverManager {
     private final static SmsReceiverInquirer IMPL;
 
     static {
-        if (Build.BRAND.equals("360")) {
+        if ("360".equals(Build.BRAND)) {
             IMPL = new QihooReceiverInquirer();
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            IMPL = new LollipopSmsInquirer();
         } else {
             IMPL = new ExtraInquirer();
         }
-
     }
 
     public static SmsReceiver getSmsReceiver(Sms sms) {
