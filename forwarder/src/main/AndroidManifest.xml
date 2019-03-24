@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.fynn.smsforwarder">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.fynn.smsforwarder">
 
     <uses-permission android:name="android.permission.READ_SMS"/>
     <uses-permission android:name="android.permission.WRITE_SMS"/>
@@ -12,7 +13,9 @@
     <uses-permission android:name="android.permission.RECEIVE_MMS"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
-    <uses-permission android:name="android.permission.BATTERY_STATS"/>
+    <uses-permission android:name="android.permission.BATTERY_STATS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:name=".base.App"
@@ -37,7 +40,7 @@
         </activity>
 
         <!-- A broadcast receiver for sms transfer -->
-        <receiver android:name=".business.TransferReceiver">
+        <receiver android:name=".business.sms.TransferReceiver">
             <intent-filter android:priority="2147483647">
                 <!-- 系统启动完成后会调用 -->
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
@@ -51,13 +54,13 @@
 
         <!-- remote service -->
         <service
-            android:name=".business.TransferService"
+            android:name=".business.sms.TransferService"
             android:enabled="true"
             android:process=":sender">
         </service>
 
         <service
-            android:name=".business.BatteryIntentService"
+            android:name=".business.battery.BatteryIntentService"
             android:enabled="true"/>
 
     </application>

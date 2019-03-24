@@ -14,8 +14,8 @@ android {
         applicationId "com.fynn.smsforwarder"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 3
-        versionName "1.0.3"
+        versionCode 5
+        versionName "1.0.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -24,8 +24,8 @@ android {
             // 不显示Log
             buildConfigField "boolean", "LOG_DEBUG", "false"
             zipAlignEnabled true  //是否zip对齐
-            minifyEnabled true  //是否混淆代码
-            shrinkResources true  //是否删除无用资源文件
+            minifyEnabled false  //是否混淆代码
+            shrinkResources false  //是否删除无用资源文件
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             resValue "string", "app_name", "短信转移"
 

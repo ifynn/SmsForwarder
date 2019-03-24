@@ -9,4 +9,14 @@ public class InboxSms extends Sms {
     public int type;
 
     public boolean read;
+
+    /**
+     * 酷派系列手机特有的字段
+     */
+    public long itemInfoId;
+
+    /**
+     * android 5.0
+     */
+    public long simId;
 }

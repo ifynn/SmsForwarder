@@ -16,7 +16,7 @@ public class SmsExtractor {
 
     private static final String SMS_REGEX = "[\\da-zA-Z]{6}|[\\d]{4}";
 
-    private static final String[] CODES = {"验证码", "校验码", "随机码"};
+    private static final String[] CODES = {"验证码", "校验码", "随机码", "安全码", "动态密码", "动态码"};
 
     /**
      * 解析短信中的验证码
@@ -42,7 +42,7 @@ public class SmsExtractor {
             return null;
         }
 
-        Matcher m = Patterns.p.matcher(msg);
+        Matcher m = Patterns.P.matcher(msg);
 
         ArraySet<String> sixDigits = new ArraySet<>(1);
         ArraySet<String> dgt$Letter = new ArraySet<>(1);
@@ -100,6 +100,6 @@ public class SmsExtractor {
     }
 
     static class Patterns {
-        public static final Pattern p = Pattern.compile(SMS_REGEX);
+        public static final Pattern P = Pattern.compile(SMS_REGEX);
     }
 }

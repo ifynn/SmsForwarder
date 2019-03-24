@@ -1,4 +1,4 @@
-package com.fynn.smsforwarder.business;
+package com.fynn.smsforwarder.business.battery;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
